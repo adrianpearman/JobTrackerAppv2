@@ -1,0 +1,12 @@
+{
+  "name": "job_tracker_new",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "cd ./backend && npm run start",
+    "start:server": "cd ./backend && npm run dev",
+    "start:client": "cd client && npm run start",
+    "dev:app": "npm run start:server & npm run start:client"
+  }
+}
