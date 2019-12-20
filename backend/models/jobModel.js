@@ -22,9 +22,18 @@ const ApplicationSchema = new Schema({
     type: Number,
     required: true
   },
+  applicationSource: {
+    type: String,
+    required: true
+  },
+  // 0 - Not Viewed
+  // 1 - Notification that application has been viewed
+  // 2 - Representative has reached out to me
+  // 3 - Application Declined
+  // 4 - Offer provided
   response: {
-    type: Boolean,
-    default: false
+    type: Number,
+    default: 0
   },
   interview: {
     type: Boolean,

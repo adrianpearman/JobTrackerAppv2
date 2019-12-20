@@ -10,6 +10,8 @@ router.get("/api/data", apiController.getJobsPagination);
 router.get("/api/data/single", apiController.getSingleJob);
 // add a single application
 router.post("/api/data", apiController.addApplication);
+// bulk upload applications
+router.post("/api/data/bulk", apiController.bulkAddApllication);
 // updating a single application
 router.put("/api/data/single", apiController.updateJobApplication);
 // delete a single job application
