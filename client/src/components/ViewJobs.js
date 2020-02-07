@@ -1,8 +1,15 @@
 import React, { Component } from "react";
 
+import Tabs from "../containers/Tab";
+
 class ViewJobs extends Component {
   render() {
-    return <p>View Jobs</p>;
+    return (
+      <Tabs>
+        <div title="Pie Chart"></div>
+        <div title="Line Chart"></div>
+      </Tabs>
+    );
   }
 }
 

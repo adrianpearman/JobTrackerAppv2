@@ -145,3 +145,5 @@ const mapStateToProps = state => {
 };
 
 export default connect(mapStateToProps, { onInputHandler })(SingleUpload);
+
+// NEdd to add in some additional error handling

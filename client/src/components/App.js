@@ -6,7 +6,7 @@ import { Provider } from "react-redux";
 // Redux Store
 import store from "../redux/store";
 // Components
-import AddApplication from "./AddApplications/AddApplication";
+import AddApplication from "./Applications/AddApplication";
 import Header from "../containers/Header";
 import LoginPage from "./UserActions/LoginPage";
 import ErrorPage from "./ErrorPage";
