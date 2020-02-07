@@ -1,3 +1,6 @@
+const csv = require("csvtojson");
+const csvFilePath = require("path").join(__dirname, "../", "test-csv.csv");
+
 const Jobs = require("../models/jobModel.js");
 const User = require("../models/userModel");
 
@@ -130,7 +133,10 @@ const apiController = {
   },
   // bulkUpload from client provided json object
   bulkAddApllication: (req, res) => {
-    console.log(req.body);
+    // Value submitted from the
+    let data = req.body.data;
+
+    res.send(data);
   },
   deleteApplication: (req, res) => {
     const userId = req.body.userId;

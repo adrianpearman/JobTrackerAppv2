@@ -4,12 +4,11 @@ const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const cors = require("cors");
-const path = require("path");
 
 // Variables
 const app = express();
 const PORT = process.env.PORT || 3001;
-const MONGO_URI = require("./config/config.js");
+const keys = require("./config/keys");
 const apiRoutes = require("./routes/apiRoutes.js");
 const userRoutes = require("./routes/userRoutes.js");
 // This is the rendered build index.html from the client build folder
@@ -22,18 +21,14 @@ app.use(cors());
 
 // Connecting to Database
 if (process.env.NODE_ENV === "production") {
-  mongoose.connect(
-    process.env.MONGO_URI.PROD,
-    { useNewUrlParser: true },
-    err => {
-      if (err) {
-        console.error(err);
-      }
-      console.log("Connected to Prodcution Database");
+  mongoose.connect(keys.MONGOURI, { useNewUrlParser: true }, err => {
+    if (err) {
+      console.error(err);
     }
-  );
+    console.log("Connected to Prodcution Database");
+  });
 } else {
-  mongoose.connect(MONGO_URI.DEV, { useNewUrlParser: true }, err => {
+  mongoose.connect(keys.MONGOURI, { useNewUrlParser: true }, err => {
     if (err) {
       console.error(err);
     }
