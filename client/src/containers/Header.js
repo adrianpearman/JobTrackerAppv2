@@ -4,7 +4,11 @@ import { Link } from "react-router-dom";
 const Header = () => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <h1 className="navbar-brand">Job Tracker</h1>
+      <h1>
+        <Link className="navbar-brand" to="/">
+          Job Tracker
+        </Link>
+      </h1>
 
       <div className="collapse navbar-collapse" id="navbarColor01">
         <ul className="navbar-nav mr-auto">
