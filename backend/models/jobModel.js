@@ -14,6 +14,10 @@ const ApplicationSchema = new Schema({
     type: String,
     required: true
   },
+  applicationPlatform: {
+    type: String,
+    required: true
+  },
   applicationMonth: {
     type: Number,
     required: true
@@ -27,10 +31,9 @@ const ApplicationSchema = new Schema({
     required: true
   },
   // 0 - Not Viewed
-  // 1 - Notification that application has been viewed
-  // 2 - Representative has reached out to me
-  // 3 - Application Declined
-  // 4 - Offer provided
+  // 1 - Representative has reached out to me
+  // 2 - Application Declined
+  // 3 - Offer provided
   response: {
     type: Number,
     default: 0

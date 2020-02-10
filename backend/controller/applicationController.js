@@ -1,6 +1,3 @@
-const csv = require("csvtojson");
-const csvFilePath = require("path").join(__dirname, "../", "test-csv.csv");
-
 const Jobs = require("../models/jobModel.js");
 const User = require("../models/userModel");
 
@@ -9,6 +6,7 @@ let newJobObject = (req, applicationNumber) => {
   return {
     applicationLink: req.body.applicationLink,
     applicationMonth: req.body.applicationMonth,
+    applicationPlatform: req.body.applicationPlatform,
     applicationSource: req.body.applicationSource,
     applicationYear: req.body.applicationYear,
     companyName: req.body.companyName,
@@ -21,7 +19,7 @@ let newJobObject = (req, applicationNumber) => {
   };
 };
 
-const apiController = {
+const applicationController = {
   getAllJobs: (req, res) => {
     Jobs.find({})
       .then(jobs => {
@@ -200,4 +198,4 @@ const apiController = {
   }
 };
 
-module.exports = apiController;
+module.exports = applicationController;
