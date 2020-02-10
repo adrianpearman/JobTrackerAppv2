@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 
-export default class BarChart extends Component {
+export default class ViewMonthlyProgress extends Component {
   render() {
     return (
       <div>
-        <h1>BarChart</h1>
+        <h1>ViewMonthlyProgress</h1>
       </div>
     );
   }

@@ -6,27 +6,29 @@ import { Provider } from "react-redux";
 // Redux Store
 import store from "../redux/store";
 // Components
-import AddApplication from "./Applications/AddApplication";
 import Header from "../containers/Header";
 import LoginPage from "./UserActions/LoginPage";
 import ErrorPage from "./ErrorPage";
-import ViewApplications from "./ViewJobs";
-class App extends React.Component {
-  render() {
-    return (
-      <Provider store={store}>
-        <Router>
-          <Header />
-          <Switch>
-            <Route path="/" component={ViewApplications} exact />
-            <Route path="/add" component={AddApplication} exact />
-            <Route path="/login" component={LoginPage} exact />
-            <Route path="/*" component={ErrorPage} />
-          </Switch>
-        </Router>
-      </Provider>
-    );
-  }
-}
+// Pages
+import AddApplication from "./Applications/Jobs/AddApplication";
+import AddRecruiter from "./Applications/Recruiter/AddRecruiter";
+import ViewApplications from "./ViewData/ViewJobs";
+
+const App = () => {
+  return (
+    <Provider store={store}>
+      <Router>
+        <Header />
+        <Switch>
+          <Route path="/" component={ViewApplications} exact />
+          <Route path="/add/application" component={AddApplication} exact />
+          <Route path="/add/recruiter" component={AddRecruiter} exact />
+          <Route path="/login" component={LoginPage} exact />
+          <Route path="/*" component={ErrorPage} />
+        </Switch>
+      </Router>
+    </Provider>
+  );
+};
 
 export default App;

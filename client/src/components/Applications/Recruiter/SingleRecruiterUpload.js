@@ -1,131 +1,104 @@
 import React from "react";
 // Redux
 import { connect } from "react-redux";
-import { onInputHandler } from "../../redux/actions/index";
+import { onInputHandler } from "../../../redux/actions/index";
 
 const SingleUpload = props => {
   return (
     <>
       <div className="col-8 offset-2">
         <div className="form-group">
-          <label htmlFor="companyName">Company Name</label>
+          <label htmlFor="recruiterName">Recruiter Name</label>
           <input
             className="form-control"
             type="text"
-            id="companyName"
+            id="recruiterName"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="applicationLink">Application Link</label>
+          <label htmlFor="recruiterDate">Recruiter Date</label>
           <input
             className="form-control"
             type="text"
-            id="applicationLink"
+            id="recruiterDate"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="applicationMonth">Application Month</label>
+          <label htmlFor="recruiterMonth">Month</label>
           <input
             className="form-control"
             type="text"
-            id="applicationMonth"
+            id="recruiterMonth"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="applicationYear">Application Year</label>
+          <label htmlFor="recruiterYear">Year</label>
           <input
             className="form-control"
             type="text"
-            id="applicationYear"
+            id="recruiterYear"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="response">Response?</label>
-          <select
-            className="form-control"
-            id="response"
-            onChange={e => props.onInputHandler(e)}
-          >
-            <option>Select a new value</option>
-            <option>true</option>
-            <option>false</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="interview">Interview?</label>
-          <select
-            className="form-control"
-            id="interview"
-            onChange={e => props.onInputHandler(e)}
-          >
-            <option>Select a new value</option>
-            <option>true</option>
-            <option>false</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="hired">Hired?</label>
-          <select
-            className="form-control"
-            id="hired"
-            onChange={e => props.onInputHandler(e)}
-          >
-            <option>Select a new value</option>
-            <option>true</option>
-            <option>false</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="hiredDateMonth">Hired Month</label>
+          <label htmlFor="recruiterPlatform">Platform</label>
           <input
             className="form-control"
-            type="number"
-            id="hiredDateMonth"
+            type="text"
+            id="recruiterPlatform"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="hiredDateYear">Hired Year</label>
+          <label htmlFor="recruiterRole">Role</label>
           <input
             className="form-control"
-            type="number"
-            id="hiredDateYear"
+            type="text"
+            id="recruiterRole"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="lastDayWorkedMonth">Last Day Worked (Month)</label>
+          <label htmlFor="recruiterLeadToRole">Lead To Role</label>
           <input
             className="form-control"
-            type="number"
-            id="lastDayWorkedMonth"
+            type="text"
+            id="recruiterLeadToRole"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
         <div className="form-group">
-          <label htmlFor="lastDayWorkedYear">Last Day Worked (Year)</label>
+          <label htmlFor="recruiterLeadToInterview">Lead To Interview</label>
           <input
             className="form-control"
-            type="number"
-            id="lastDayWorkedYear"
+            type="text"
+            id="recruiterLeadToInterview"
             onChange={e => props.onInputHandler(e)}
           />
         </div>
-
+        <div className="form-group">
+          <label htmlFor="recruiterHiringInternal">
+            Hiring For Internal Position
+          </label>
+          <input
+            className="form-control"
+            type="text"
+            id="recruiterHiringInternal"
+            onChange={e => props.onInputHandler(e)}
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="recruiterCompany">Company Name</label>
+          <input
+            className="form-control"
+            type="text"
+            id="recruiterCompany"
+            onChange={e => props.onInputHandler(e)}
+          />
+        </div>
         <button
           className="btn btn-primary btn-lg btn-block"
           onClick={e => props.onInputHandler(e)}
@@ -144,6 +117,6 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps, { onInputHandler })(SingleUpload);
+const mapDispatchToProps = { onInputHandler };
 
-// NEdd to add in some additional error handling
+export default connect(mapStateToProps, mapDispatchToProps)(SingleUpload);
