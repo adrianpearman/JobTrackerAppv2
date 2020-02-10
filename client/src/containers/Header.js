@@ -10,16 +10,21 @@ const Header = () => {
         </Link>
       </h1>
 
-      <div className="collapse navbar-collapse" id="navbarColor01">
+      <div className="navbar-collapse" id="navbarColor01">
         <ul className="navbar-nav mr-auto">
-          <li className="nav-item active">
+          <li className="nav-item">
             <Link className="nav-link" to="/">
               View Jobs
             </Link>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to="/add">
+            <Link className="nav-link" to="/add/application">
               Add Application
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/add/recruiter">
+              Add Recruiter
             </Link>
           </li>
 
