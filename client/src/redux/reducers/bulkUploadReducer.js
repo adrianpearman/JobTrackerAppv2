@@ -2,7 +2,8 @@ import ACTIONS from "../actions/types";
 
 const initialState = {
   isCSV: null,
-  csvData: null,
+  csvDataApplication: null,
+  csvDataRecruiter: null,
   uploadSuccessful: null
 };
 
@@ -14,9 +15,10 @@ export const bulkUploadReducer = (state = initialState, action) => {
         isCSV: action.payload
       };
     case ACTIONS.CSV_UPLOAD_DATA:
+      console.log(action.payload);
       return {
         ...state,
-        csvData: action.payload
+        [action.payload.id]: action.payload.data
       };
     case ACTIONS.CSV_UPLOAD_SUCCESSFULL:
       return {
@@ -26,7 +28,7 @@ export const bulkUploadReducer = (state = initialState, action) => {
     case ACTIONS.CSV_UPLOAD_CLEAR_DATA:
       return {
         ...state,
-        csvData: null
+        ...initialState
       };
     default: {
       return state;

@@ -31,7 +31,7 @@ export const intializeJobState = job => dispatch => {
 };
 export const fetchJobs = () => dispatch => {
   axios
-    .get("/api/data/all")
+    .get("/api/data/application/all")
     .then(data => {
       dispatch({
         type: ACTIONS.RETRIEVE_JOBS_LIST,
@@ -47,7 +47,7 @@ export const fetchJobsList = (startingPoint, amountOfRecords) => dispatch => {
   };
 
   axios
-    .get("/api/data", requestedPagination)
+    .get("/api/application.data", requestedPagination)
     .then(data => {
       dispatch({
         type: ACTIONS.RETRIEVE_JOBS_LIST_PAGINATION,
@@ -58,7 +58,7 @@ export const fetchJobsList = (startingPoint, amountOfRecords) => dispatch => {
 };
 export const singleJob = id => dispatch => {
   axios
-    .get("/api/data/single", id)
+    .get("/api/data/application/single", id)
     .then(data => {
       dispatch({
         type: ACTIONS.RETRIEVE_SINGLE_JOB,
@@ -69,7 +69,7 @@ export const singleJob = id => dispatch => {
 };
 export const postSingleJob = content => dispatch => {
   axios
-    .post("/api/data", content)
+    .post("/api/application/data", content)
     .then(data => {
       dispatch({
         type: ACTIONS,
@@ -80,7 +80,7 @@ export const postSingleJob = content => dispatch => {
 };
 export const updateJobInformation = content => dispatch => {
   axios
-    .put("/api/data/single", content)
+    .put("/api/data/application/single", content)
     .then(data => {
       dispatch({
         type: ACTIONS.UPDATE_JOB_INFORMATION,
@@ -121,7 +121,7 @@ export const onClickHandler = state => {
   });
   console.log(newContentObject);
   axios
-    .put("/api/data/single", newContentObject)
+    .put("/api/data/application/single", newContentObject)
     .then(data => {
       console.log(data);
     })
@@ -139,29 +139,46 @@ export const handleFileSelect = e => dispatch => {
       payload: false
     });
   }
+  let id = e.target.id;
 
   let reader = new FileReader();
   reader.onload = event => {
-    let data = event.target.result.split(/(?:\\[rn]|[\r\n]+)+/g);
+    let content = {
+      id: id,
+      data: event.target.result.split(/(?:\\[rn]|[\r\n]+)+/g)
+    };
+
     dispatch({
       type: ACTIONS.CSV_UPLOAD_VALID,
       payload: true
     });
     dispatch({
       type: ACTIONS.CSV_UPLOAD_DATA,
-      payload: data
+      payload: content
     });
   };
   reader.readAsText(file);
 };
 
-export const handleSubmitFile = () => (dispatch, getState) => {
-  let data = { data: getState().bulkUploadReducer.csvData };
+export const handleSubmitFile = e => (dispatch, getState) => {
+  let data;
+  if (e === "csvDataApplication") {
+    data = { data: getState().bulkUploadReducer.csvDataApplication };
+  } else if (e === "csvDataRecruiter") {
+    data = { data: getState().bulkUploadReducer.csvDataRecruiter };
+  }
+
+  console.log(e);
+  let url =
+    e === "csvDataApplication"
+      ? "/api/data/application/bulk"
+      : "/api/data/recruiter/bulk";
+
   axios
-    .post("/api/data/bulk", data)
+    .post(url, data)
     .then(res => {
       console.log(res);
-      document.getElementById("files").value = "";
+      document.getElementById(e).value = "";
       dispatch({
         type: ACTIONS.CSV_UPLOAD_SUCCESSFULL,
         payload: true
@@ -172,7 +189,10 @@ export const handleSubmitFile = () => (dispatch, getState) => {
       });
       dispatch({
         type: ACTIONS.CSV_UPLOAD_DATA,
-        payload: null
+        payload: {
+          id: e,
+          data: null
+        }
       });
       setTimeout(() => {
         dispatch({
@@ -191,8 +211,8 @@ export const handleSubmitFile = () => (dispatch, getState) => {
     });
 };
 
-export const clearSubmitFile = () => dispatch => {
-  document.getElementById("files").value = "";
+export const clearSubmitFile = e => dispatch => {
+  document.getElementById(`${e}`).value = "";
   dispatch({
     type: ACTIONS.CSV_UPLOAD_CLEAR_DATA
   });
