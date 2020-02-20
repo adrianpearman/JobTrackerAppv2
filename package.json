@@ -1,12 +1,36 @@
 {
-  "name": "job_tracker_new",
+  "name": "backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "./backend/server.js",
   "license": "MIT",
   "scripts": {
-    "start": "cd ./backend && npm run start",
-    "start:server": "cd ./backend && npm run dev",
-    "start:client": "cd client && npm run start",
-    "dev:app": "npm run start:server & npm run start:client"
+    "lint": "eslint ./backend/server.js & eslint ./backend/**/*.js",
+    "lint:fix": "npm run lint --fix",
+    "prettier": "prettier ./backend/server.js --write & prettier ./backend/**/*.js --write",
+    "dev:server": "nodemon ./backend/server.js --exec 'npm run prettier && node'",
+    "dev:client": "cd client && npm run start",
+    "dev:app": "npm run dev:server & npm run dev:client",
+    "start": "node ./backend/server.js"
+  },
+  "dependencies": {
+    "bcrypt": "^3.0.6",
+    "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
+    "csvtojson": "^2.0.10",
+    "dotenv": "^8.0.0",
+    "express": "^4.17.1",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.24.0",
+    "mongoose": "^5.5.13",
+    "nodemon": "^1.19.1",
+    "path": "^0.12.7",
+    "prettier": "^1.18.0"
+  },
+  "devDependencies": {
+    "eslint": "^6.8.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.10.0",
+    "eslint-plugin-import": "^2.20.1",
+    "eslint-plugin-prettier": "^3.1.2"
   }
 }
