@@ -12,7 +12,8 @@ import ErrorPage from "./ErrorPage";
 // Pages
 import AddApplication from "./Applications/Jobs/AddApplication";
 import AddRecruiter from "./Applications/Recruiter/AddRecruiter";
-import ViewApplications from "./ViewData/ViewJobs";
+import ViewApplications from "./ViewApplicationData/ViewJobs";
+import ViewRecruiters from "./ViewRecruiterData/ViewRecruiters";
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
         <Header />
         <Switch>
           <Route path="/" component={ViewApplications} exact />
+          <Route path="/recruiters" component={ViewRecruiters} exact />
           <Route path="/add/application" component={AddApplication} exact />
           <Route path="/add/recruiter" component={AddRecruiter} exact />
           <Route path="/login" component={LoginPage} exact />

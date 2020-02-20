@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 
 import Tabs from "../../containers/Tab";
-import ViewConversion from "./ViewConversion";
-import ViewMonthlyProgress from "./ViewMonthyProgress";
+import ViewConversion from "./ViewApplicationConversion";
+import ViewMonthlyProgress from "./ViewMonthyApplicationProgress";
 
 class ViewJobs extends Component {
   render() {

@@ -129,7 +129,6 @@ export const onClickHandler = state => {
       console.error(err);
     });
 };
-
 //Bulk Upload
 export const handleFileSelect = e => dispatch => {
   let file = e.target.files[0];
@@ -159,7 +158,6 @@ export const handleFileSelect = e => dispatch => {
   };
   reader.readAsText(file);
 };
-
 export const handleSubmitFile = e => (dispatch, getState) => {
   let data;
   if (e === "csvDataApplication") {
@@ -168,7 +166,6 @@ export const handleSubmitFile = e => (dispatch, getState) => {
     data = { data: getState().bulkUploadReducer.csvDataRecruiter };
   }
 
-  console.log(e);
   let url =
     e === "csvDataApplication"
       ? "/api/data/application/bulk"
@@ -210,7 +207,6 @@ export const handleSubmitFile = e => (dispatch, getState) => {
       console.log(err);
     });
 };
-
 export const clearSubmitFile = e => dispatch => {
   document.getElementById(`${e}`).value = "";
   dispatch({
