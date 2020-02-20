@@ -25,11 +25,7 @@ router.get(
 
 //POST REQUESTS
 // add a single application
-router.post(
-  "/api/data/application",
-  isLoggedIn,
-  applicationController.addApplication
-);
+router.post("/api/data/application", applicationController.addApplication);
 // bulk upload applications
 router.post(
   "/api/data/application/bulk",

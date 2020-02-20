@@ -10,6 +10,10 @@ const ApplicationSchema = new Schema({
     type: String,
     required: true
   },
+  applicationDate: {
+    type: Number,
+    required: true
+  },
   applicationLink: {
     type: String,
     required: true
