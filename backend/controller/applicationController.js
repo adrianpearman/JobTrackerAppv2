@@ -1,133 +1,137 @@
+const moment = require("moment");
 const Jobs = require("../models/jobModel.js");
 const User = require("../models/userModel");
 
 // setting the object to be saved in the database
-let newJobObject = (req, applicationNumber) => {
+let newJobObject = ({
+  applicationLink,
+  applicationMonth,
+  applicationPlatform,
+  applicationSource,
+  applicationYear,
+  companyName,
+  hired,
+  hiredDate,
+  interview,
+  lastDayWorked,
+  response,
+  userId
+}) => {
   return {
-    applicationLink: req.body.applicationLink,
-    applicationMonth: req.body.applicationMonth,
-    applicationPlatform: req.body.applicationPlatform,
-    applicationSource: req.body.applicationSource,
-    applicationYear: req.body.applicationYear,
-    companyName: req.body.companyName,
-    hired: req.body.hired,
-    hiredDate: req.body.hiredDate,
-    interview: req.body.interview,
-    lastDayWorked: req.body.lastDayWorked,
-    response: req.body.response,
-    userId: req.body.userId
+    applicationDate: moment(
+      `${applicationYear}.${applicationMonth}.01`,
+      "YYYY.MM.DD"
+    ).unix(),
+    applicationLink: applicationLink,
+    applicationMonth: applicationMonth,
+    applicationPlatform: applicationPlatform,
+    applicationSource: applicationSource,
+    applicationYear: applicationYear,
+    companyName: companyName,
+    hired: hired,
+    hiredDate: hiredDate,
+    interview: interview,
+    lastDayWorked: lastDayWorked,
+    response: response,
+    userId: userId
   };
 };
 
 const applicationController = {
-  getAllJobs: (req, res) => {
-    Jobs.find({})
-      .then(jobs => {
-        res.json(jobs);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+  getAllJobs: async (req, res) => {
+    try {
+      let jobs = await Jobs.find({});
+      res.json(jobs);
+    } catch (err) {
+      res.status(400).send({ errMsg: err });
+    }
   },
-  getJobsPagination: (req, res) => {
-    const startingPoint = req.body.startingPoint;
-    const amountOfRecords = req.body.amountOfRecords;
+  getJobsPagination: async (req, res) => {
+    const { startingPoint, amountOfRecords } = req.body;
 
-    Jobs.find({})
-      .skip(startingPoint)
-      .limit(amountOfRecords)
-      .then(jobs => {
-        res.json(jobs);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let jobs = await Jobs.find({})
+        .skip(startingPoint)
+        .limit(amountOfRecords);
+      res.json(jobs);
+    } catch (err) {
+      res.status(400).send({ errMsg: err });
+    }
   },
-  getSingleJob: (req, res) => {
-    const jobId = req.body.jobId;
-    Jobs.findById(jobId)
-      .then(job => {
-        if (!job) {
-          res.json({
-            message: "no application found"
-          });
-        } else {
-          res.json(job);
-        }
-      })
-      .catch(err => {
-        res.json({
-          message,
-          errMsg: err
-        });
+  getSingleJob: async (req, res) => {
+    const { jobId } = req.body;
+
+    let job = await Jobs.findById(jobId);
+    //Validate whether job exists
+    if (!job) {
+      return res.status(400).send({
+        message: "no application found"
       });
+    }
+
+    try {
+      res.json(job);
+    } catch (err) {
+      res.status(400).send({ errMsg: err });
+    }
   },
-  updateJobApplication: (req, res) => {
-    User.findById(req.body.userId)
-      .then(() => {
-        const updatedContent = req.body;
-        const jobId = updatedContent.jobId;
-        Jobs.updateOne({ _id: jobId }, updatedContent)
-          .then(() => {
-            res.json({
-              message: `Successfully updated Jo ID: ${jobId}`,
-              updated: updatedContent
-            });
-          })
-          .catch(err => {
-            res.json({
-              message: "Error occured: Unable to find application",
-              errMsg: err
-            });
-          });
-      })
-      .catch(err => {
-        res.json({
-          message: "Please resubmit with a valid UserID",
-          errMsg: err
-        });
+  updateJobApplication: async (req, res) => {
+    const { userId, jobId } = req.body;
+    const updatedContent = req.body;
+
+    let user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(400).send({
+        message: "Please resubmit with a valid UserID",
+        errMsg: err
       });
+    }
+
+    try {
+      let job = await Jobs.updateOne({ _id: jobId }, updatedContent);
+      res.send({
+        message: `Successfully updated Jo ID: ${jobId}`,
+        updated: updatedContent
+      });
+    } catch (err) {
+      res.status(400).send({
+        message: "Error occured: Unable to find application",
+        errMsg: err
+      });
+    }
   },
-  addApplication: (req, res) => {
+  addApplication: async (req, res) => {
+    const { userId, applicationLink } = req.body;
+
     // validating whether a userId is present
-    User.find({ _id: req.body.userId })
-      .then(() => {
-        Jobs.findOne({ applicationLink: req.body.applicationLink })
-          .then(job => {
-            if (!job) {
-              let newJobContent = newJobObject(req);
-              let newJob = new Jobs(newJobContent);
-              newJob
-                .save()
-                .then(job => {
-                  res.json(job);
-                })
-                .catch(err => {
-                  res.json({
-                    message: "Error occured: Unable to create application",
-                    errMsg: err
-                  });
-                });
-            } else {
-              res.json({
-                message:
-                  "Unable to add to Database, Application already in System",
-                job: job
-              });
-            }
-          })
-          .catch(err => {
-            res.json({
-              errMsg: err
-            });
-          });
-      })
-      .catch(err => {
-        res.json({
-          message: "Please resubmit with a valid UserID",
-          errMsg: err
-        });
+    let user = await User.findOne({ _id: userId });
+
+    if (!user) {
+      return res
+        .status(400)
+        .send({ message: "Please resubmit with a valid UserID" });
+    }
+
+    //validating whether Job has been posted already
+    let job = await Jobs.findOne({ applicationLink });
+
+    if (job) {
+      return res.status(400).send({
+        message: "Unable to add to Database, Application already in System"
       });
+    }
+
+    try {
+      let newJobContent = new Jobs(newJobObject(req.body));
+      let newJob = await newJobContent.save();
+      res.send(newJob);
+    } catch (err) {
+      res.status(400).send({
+        message: "Error occured: Unable to create application",
+        errMsg: err
+      });
+    }
   },
   // bulkUpload from client provided json object
   bulkAddApllication: (req, res) => {
@@ -136,65 +140,56 @@ const applicationController = {
 
     res.send(data);
   },
-  deleteApplication: (req, res) => {
-    const userId = req.body.userId;
-    const jobId = req.body.jobId;
+  deleteApplication: async (req, res) => {
+    const { userId, jobId } = req.body;
 
-    User.find({ _id: userId })
-      .then(() => {
-        Jobs.deleteOne({ _id: jobId })
-          .then(job => {
-            res.json({
-              ...job,
-              jobId
-            });
-          })
-          .catch(err => {
-            res.json({
-              message,
-              errMsg: err
-            });
-          });
-      })
-      .catch(err => {
-        res.json({
-          message,
-          errMsg: err
-        });
+    let user = await User.find({ _id: userId });
+
+    if (!user) {
+      return res.status(400).send({ errMsg: err });
+    }
+
+    try {
+      let job = await Jobs.deleteOne({ _id: jobId });
+      res.send({
+        ...job,
+        jobId
       });
+    } catch (err) {
+      res.json({
+        errMsg: err
+      });
+    }
   },
-  getJobsPerMonth: (req, res) => {
-    const month = req.body.month;
+  getJobsPerMonth: async (req, res) => {
+    const { month } = req.body;
 
-    Jobs.find({ applicationMonth: month })
-      .then(jobs => {
-        res.json(jobs);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let jobs = await Jobs.find({ applicationMonth: month });
+      res.json(jobs);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  getJobsPerYear: (req, res) => {
-    const year = req.body.year;
+  getJobsPerYear: async (req, res) => {
+    const { year } = req.body;
 
-    Jobs.find({ applicationYear: year })
-      .then(jobs => {
-        res.json(jobs);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let jobs = await Jobs.find({ applicationYear: year });
+      res.json(jobs);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  getJobsFromCompany: (req, res) => {
-    const companyName = req.body.companyName;
+  getJobsFromCompany: async (req, res) => {
+    const { companyName } = req.body;
 
-    Jobs.find({ companyName: companyName })
-      .then(jobs => {
-        res.json(jobs);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let jobs = await Jobs.find({ companyName: companyName });
+      res.json(jobs);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   }
 };
 

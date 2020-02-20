@@ -1,104 +1,100 @@
 const Recruiter = require("../models/recruiterModel");
 
-let newRecruiterObject = (req, applicationNumber) => {
+let newRecruiterObject = ({
+  company,
+  contract,
+  date,
+  hiringInternal,
+  leadToInterview,
+  leadToRole,
+  month,
+  name,
+  platform,
+  role,
+  year
+}) => {
   return {
-    name: req.body.name,
-    date: req.body.date,
-    month: req.body.month,
-    year: req.body.year,
-    platform: req.body.platform,
-    role: req.body.role,
-    leadToRole: req.body.leadToRole,
-    leadToInterview: req.body.leadToInterview,
-    contract: req.body.contract,
-    hiringInternal: req.body.hiringInternal,
-    company: req.body.company
+    company: company,
+    contract: contract,
+    date: date,
+    hiringInternal: hiringInternal,
+    leadToInterview: leadToInterview,
+    leadToRole: leadToRole,
+    month: month,
+    name: name,
+    platform: platform,
+    role: role,
+    year: year
   };
 };
 
 const recruitrerController = {
-  getRecruitersAll: (req, res) => {
-    Recruiter.find()
-      .then(rec => {
-        res.send(rec);
-      })
-      .catch(err => {
-        res.send(err);
-      });
+  getRecruitersAll: async (req, res) => {
+    try {
+      let recruiter = await Recruiter.find();
+      res.send(recruiter);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  getRecruitersPagination: (req, res) => {
-    const startingPoint = req.body.startingPoint;
-    const amountOfRecords = req.body.amountOfRecords;
+  getRecruitersPagination: async (req, res) => {
+    const { startingPoint, amountOfRecords } = req.body;
 
-    Recruiter.find({})
-      .skip(startingPoint)
-      .limit(amountOfRecords)
-      .then(rec => {
-        res.json(rec);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let recruiter = await Recruiter.find({})
+        .skip(startingPoint)
+        .limit(amountOfRecords);
+      res.send(recruiter);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  getSingleRecruiter: (req, res) => {
-    const recruiterId = req.body.recruiterId;
-    Recruiter.findById(recruiterId)
-      .then(rec => {
-        if (!rec) {
-          res.json({
-            message: "no application found"
-          });
-        } else {
-          res.json(rec);
-        }
-      })
-      .catch(err => {
-        res.json({
-          message,
-          errMsg: err
-        });
+  getSingleRecruiter: async (req, res) => {
+    const { recruiterId } = req.body;
+
+    let recruiter = await Recruiter.findById(recruiterId);
+    if (!recruiter) {
+      return res.status(400).send({
+        message: "no recruiter message found"
       });
+    }
+
+    res.send(recruiter);
   },
-  addRecruiter: (req, res) => {
+  addRecruiter: async (req, res) => {
     // validating whether a userId is present
-    User.find({ _id: req.body.userId })
-      .then(() => {
-        Recruiter.findOne({ name: req.body.name, date: req.body.date })
-          .then(recruiter => {
-            if (!recruiter) {
-              let newrecruiterContent = newRecruiterObject(req);
-              let newRecruiter = new Jobs(newrecruiterContent);
-              newRecruiter
-                .save()
-                .then(job => {
-                  res.json(job);
-                })
-                .catch(err => {
-                  res.json({
-                    message: "Error occured: Unable to create application",
-                    errMsg: err
-                  });
-                });
-            } else {
-              res.json({
-                message:
-                  "Unable to add to Database, Recruiter Message already in System",
-                job: job
-              });
-            }
-          })
-          .catch(err => {
-            res.json({
-              errMsg: err
-            });
-          });
-      })
-      .catch(err => {
-        res.json({
-          message: "Please resubmit with a valid UserID",
-          errMsg: err
-        });
+    const { userId, name, date } = req.body;
+
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).send({
+        message: "Please resubmit with a valid UserID"
       });
+    }
+
+    let recruiter = await Recruiter.findOne({
+      name: name,
+      date: date
+    });
+
+    if (recruiter) {
+      return res.status(400).send({
+        message:
+          "Unable to add to Database, Recruiter Message already in System",
+        job: job
+      });
+    }
+
+    try {
+      let newRecruiter = new Jobs(newRecruiterObject(req.body));
+      let newRecruiterContent = await newRecruiter.save();
+      res.send(newRecruiterContent);
+    } catch (err) {
+      res.status(400).send({
+        message: "Error occured: Unable to create application",
+        errMsg: err
+      });
+    }
   },
   // bulkUpload from client provided json object
   bulkAddRecruiter: (req, res) => {
@@ -107,91 +103,83 @@ const recruitrerController = {
 
     res.send(data);
   },
-  getRecruiterPerMonth: (req, res) => {
-    const month = req.body.month;
+  getRecruiterPerMonth: async (req, res) => {
+    const { month } = req.body;
 
-    Recruiter.find({ recruiterMonth: month })
-      .then(rec => {
-        res.json(rec);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let recruiter = await Recruiter.find({ recruiterMonth: month });
+      res.send(recruiter);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  getRecruiterPerYear: (req, res) => {
-    const year = req.body.year;
+  getRecruiterPerYear: async (req, res) => {
+    const { year } = req.body.year;
 
-    Jobs.find({ recruiterYear: year })
-      .then(rec => {
-        res.json(rec);
-      })
-      .catch(err => {
-        res.json(err);
-      });
+    try {
+      let recruiter = await Recruiter.find({ recruiterYear: year });
+      res.send(recruiter);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  getRecruiterFromCompany: (req, res) => {
-    const recruiterCompany = req.body.company;
+  getRecruiterFromCompany: async (req, res) => {
+    const { recruiterCompany } = req.body;
 
-    Recruiter.find({ recruiterCompany: recruiterCompany })
-      .then(jobs => {
-        res.json(jobs);
-      })
-      .catch(err => {
-        res.json(err);
+    try {
+      let recruiter = await Recruiter.find({
+        recruiterCompany: recruiterCompany
       });
+      res.send(recruiter);
+    } catch (err) {
+      res.status(400).send(err);
+    }
   },
-  updateRecruiterApplication: (req, res) => {
-    User.findById(req.body.userId)
-      .then(() => {
-        const updatedContent = req.body;
-        const recruiterId = updatedContent.recruiterId;
-        Recruiter.updateOne({ _id: recruiterId }, updatedContent)
-          .then(() => {
-            res.json({
-              message: `Successfully updated Recruiter ID: ${recruiterId}`,
-              updated: updatedContent
-            });
-          })
-          .catch(err => {
-            res.json({
-              message: "Error occured: Unable to find application",
-              errMsg: err
-            });
-          });
-      })
-      .catch(err => {
-        res.json({
-          message: "Please resubmit with a valid UserID",
-          errMsg: err
-        });
-      });
-  },
-  deleteApplication: (req, res) => {
-    const userId = req.body.userId;
-    const recruiterId = req.body.recruiterId;
+  updateRecruiterApplication: async (req, res) => {
+    const { userId, recruiterId } = req.body;
+    const updatedContent = req.body;
 
-    User.find({ _id: userId })
-      .then(() => {
-        Recruiter.deleteOne({ _id: recruiterId })
-          .then(rec => {
-            res.json({
-              ...rec,
-              jobId
-            });
-          })
-          .catch(err => {
-            res.json({
-              message,
-              errMsg: err
-            });
-          });
-      })
-      .catch(err => {
-        res.json({
-          message,
-          errMsg: err
-        });
+    let user = await User.findById(userId);
+    if (!user) {
+      return res.status(400).send({
+        message: "Please resubmit with a valid UserID"
       });
+    }
+
+    try {
+      let updatedContentRecruiter = await Recruiter.updateOne(
+        { _id: recruiterId },
+        updatedContent
+      );
+      res.send({
+        message: `Successfully updated Recruiter ID: ${recruiterId}`,
+        updated: updatedContentRecruiter
+      });
+    } catch (err) {
+      res.status(400).send({
+        message: "Error occured: Unable to find application",
+        errMsg: err
+      });
+    }
+  },
+  deleteApplication: async (req, res) => {
+    const { userId, recruiterId } = req.body;
+
+    let user = await User.findOne({ _id: userId });
+    if (!user) {
+      return res.status(400).send({
+        message: "Please resubmit with a valid UserID"
+      });
+    }
+
+    try {
+      let recruiter = await Recruiter.deleteOne({ _id: recruiterId });
+      res.send({ ...recruiter });
+    } catch (err) {
+      res.status(400).send({
+        errMsg: err
+      });
+    }
   }
 };
 
