@@ -4,6 +4,9 @@
   "main": "./backend/server.js",
   "license": "MIT",
   "scripts": {
+    "install-backend": "yarn install",
+    "install-client": "cd client && yarn install",
+    "install-packages": "npm run install-backend && npm run install-client",
     "lint": "eslint ./backend/server.js & eslint ./backend/**/*.js",
     "lint:fix": "npm run lint --fix",
     "prettier": "prettier ./backend/server.js --write & prettier ./backend/**/*.js --write",
