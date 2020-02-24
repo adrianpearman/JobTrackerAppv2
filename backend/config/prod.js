@@ -1,3 +1,4 @@
 module.exports = {
-  MONGOURI: `mongodb://adrianpearman:REDbull45!@ds161391.mlab.com:61391/job-app-tracker-prod`
+  MONGOURI: process.env.MONGOURI,
+  TOKEN_SECRET: process.env.TOKEN_SECRET
 };
