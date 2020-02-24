@@ -9,23 +9,23 @@ const initialState = {
 
 export const bulkUploadReducer = (state = initialState, action) => {
   switch (action.type) {
-    case ACTIONS.CSV_UPLOAD_VALID:
+    case ACTIONS.CSV_JOBS_UPLOAD_VALID:
       return {
         ...state,
         isCSV: action.payload
       };
-    case ACTIONS.CSV_UPLOAD_DATA:
+    case ACTIONS.CSV_JOBS_UPLOAD_DATA:
       console.log(action.payload);
       return {
         ...state,
         [action.payload.id]: action.payload.data
       };
-    case ACTIONS.CSV_UPLOAD_SUCCESSFULL:
+    case ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL:
       return {
         ...state,
         uploadSuccessful: action.payload
       };
-    case ACTIONS.CSV_UPLOAD_CLEAR_DATA:
+    case ACTIONS.CSV_JOBS_UPLOAD_CLEAR_DATA:
       return {
         ...state,
         ...initialState

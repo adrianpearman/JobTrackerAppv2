@@ -81,9 +81,10 @@ const onSubmitUpdatedContentHandler = () => (dispatch, getState) => {
 //Bulk Upload
 const handleFileSelect = e => dispatch => {
   let file = e.target.files[0];
-  if (file.type !== "type/csv") {
+
+  if (file.type !== "text/csv") {
     dispatch({
-      type: ACTIONS.CSV_UPLOAD_VALID,
+      type: ACTIONS.CSV_JOBS_UPLOAD_VALID,
       payload: false
     });
   }
@@ -97,11 +98,11 @@ const handleFileSelect = e => dispatch => {
     };
 
     dispatch({
-      type: ACTIONS.CSV_UPLOAD_VALID,
+      type: ACTIONS.CSV_JOBS_UPLOAD_VALID,
       payload: true
     });
     dispatch({
-      type: ACTIONS.CSV_UPLOAD_DATA,
+      type: ACTIONS.CSV_JOBS_UPLOAD_DATA,
       payload: content
     });
   };
@@ -126,15 +127,15 @@ const handleSubmitFile = e => (dispatch, getState) => {
       console.log(res);
       document.getElementById(e).value = "";
       dispatch({
-        type: ACTIONS.CSV_UPLOAD_SUCCESSFULL,
+        type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
         payload: true
       });
       dispatch({
-        type: ACTIONS.CSV_UPLOAD_VALID,
+        type: ACTIONS.CSV_JOBS_UPLOAD_VALID,
         payload: null
       });
       dispatch({
-        type: ACTIONS.CSV_UPLOAD_DATA,
+        type: ACTIONS.CSV_JOBS_UPLOAD_DATA,
         payload: {
           id: e,
           data: null
@@ -142,14 +143,14 @@ const handleSubmitFile = e => (dispatch, getState) => {
       });
       setTimeout(() => {
         dispatch({
-          type: ACTIONS.CSV_UPLOAD_SUCCESSFULL,
+          type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
           payload: null
         });
       }, 2000);
     })
     .catch(err => {
       dispatch({
-        type: ACTIONS.CSV_UPLOAD_SUCCESSFULL,
+        type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
         payload: false
       });
 
@@ -159,7 +160,7 @@ const handleSubmitFile = e => (dispatch, getState) => {
 const clearSubmitFile = e => dispatch => {
   document.getElementById(`${e}`).value = "";
   dispatch({
-    type: ACTIONS.CSV_UPLOAD_CLEAR_DATA
+    type: ACTIONS.CSV_JOBS_UPLOAD_CLEAR_DATA
   });
 };
 
