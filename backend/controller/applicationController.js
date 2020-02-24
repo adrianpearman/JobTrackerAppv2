@@ -135,9 +135,8 @@ const applicationController = {
   },
   // bulkUpload from client provided json object
   bulkAddApllication: (req, res) => {
-    // Value submitted from the
+    // Value submitted from the client
     let data = req.body.data;
-
     res.send(data);
   },
   deleteApplication: async (req, res) => {

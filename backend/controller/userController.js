@@ -1,4 +1,7 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+const keys = require("../config/keys");
 const User = require("../models/userModel.js");
 
 const userController = {
@@ -46,7 +49,9 @@ const userController = {
       });
     }
 
-    res.send(user);
+    const { _id } = user;
+    const token = jwt.sign({ _id }, keys.TOKEN_SECRET);
+    res.header("auth-token", token).send(user);
   }
 };
 
