@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import actions from "../../redux/actions";
+import PieChart from "../../containers/charts/PieChart";
+import TableContainer from "../../containers/table/TableContainer";
 
 const ViewConversion = props => {
   return (
-    <div>
-      <h1>ViewConversion</h1>
+    <div className="col-12">
+      <PieChart />
+      <p>{props.job.jobList.length}</p>
       <button onClick={() => props.fetchJobs()}>fetch buttons</button>
+      <TableContainer recruiter={false} />
     </div>
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ job }) => {
   return {
-    state: state
+    job: job
   };
 };
 
