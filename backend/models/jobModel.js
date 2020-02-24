@@ -28,11 +28,8 @@ const ApplicationSchema = new Schema({
   },
   applicationYear: {
     type: Number,
-    required: true
-  },
-  applicationSource: {
-    type: String,
-    required: true
+    required: true,
+    default: new Date().getFullYear()
   },
   // 0 - Not Viewed
   // 1 - Representative has reached out to me
@@ -51,16 +48,20 @@ const ApplicationSchema = new Schema({
     default: false
   },
   hiredDateMonth: {
-    type: Number
+    type: Number,
+    default: 0
   },
   hiredDateYear: {
-    type: Number
+    type: Number,
+    default: 0
   },
   lastDayWorkedMonth: {
-    type: Number
+    type: Number,
+    default: 0
   },
   lastDayWorkedYear: {
-    type: Number
+    type: Number,
+    default: 0
   }
 });
 
