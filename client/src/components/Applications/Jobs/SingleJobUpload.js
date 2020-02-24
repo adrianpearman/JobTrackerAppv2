@@ -1,9 +1,9 @@
 import React from "react";
 // Redux
 import { connect } from "react-redux";
-import { onInputHandler } from "../../../redux/actions/index";
+import actions from "../../../redux/actions/index";
 
-const SingleUpload = props => {
+const SingleUpload = ({ onInputHandler, onSubmitHandler, push }) => {
   return (
     <>
       <div className="col-8 offset-2">
@@ -13,7 +13,7 @@ const SingleUpload = props => {
             className="form-control"
             type="text"
             id="companyName"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           />
         </div>
 
@@ -23,37 +23,55 @@ const SingleUpload = props => {
             className="form-control"
             type="text"
             id="applicationLink"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="applicationPlatform">Application Platform</label>
-          <input
+          <select
             className="form-control"
-            type="text"
             id="applicationPlatform"
-            onChange={e => props.onInputHandler(e)}
-          />
+            onChange={e => onInputHandler(e)}
+          >
+            <option value="angel">Angel List</option>
+            <option value="glassdoor">Glassdoor</option>
+            <option value="indeed">Indeed</option>
+            <option value="linkedin">LinkedIn</option>
+            <option value="other">Other</option>
+          </select>
         </div>
 
         <div className="form-group">
           <label htmlFor="applicationMonth">Application Month</label>
-          <input
+          <select
             className="form-control"
-            type="text"
             id="applicationMonth"
-            onChange={e => props.onInputHandler(e)}
-          />
+            onChange={e => onInputHandler(e)}
+          >
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
         </div>
 
         <div className="form-group">
           <label htmlFor="applicationYear">Application Year</label>
           <input
             className="form-control"
-            type="text"
+            type="number"
+            min="2017"
             id="applicationYear"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           />
         </div>
 
@@ -62,11 +80,12 @@ const SingleUpload = props => {
           <select
             className="form-control"
             id="response"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           >
-            <option>Select a new value</option>
-            <option>true</option>
-            <option>false</option>
+            <option value="0">Not Viewed</option>
+            <option value="1">Representative Reached Out</option>
+            <option value="2">Application Declined </option>
+            <option value="3">Offer Provided</option>
           </select>
         </div>
 
@@ -75,11 +94,10 @@ const SingleUpload = props => {
           <select
             className="form-control"
             id="interview"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           >
-            <option>Select a new value</option>
-            <option>true</option>
-            <option>false</option>
+            <option value="false">No</option>
+            <option value="true">Yes</option>
           </select>
         </div>
 
@@ -88,22 +106,33 @@ const SingleUpload = props => {
           <select
             className="form-control"
             id="hired"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           >
-            <option>Select a new value</option>
-            <option>true</option>
-            <option>false</option>
+            <option value="false">No</option>
+            <option value="true">Yes</option>
           </select>
         </div>
 
         <div className="form-group">
           <label htmlFor="hiredDateMonth">Hired Month</label>
-          <input
+          <select
             className="form-control"
-            type="number"
             id="hiredDateMonth"
-            onChange={e => props.onInputHandler(e)}
-          />
+            onChange={e => onInputHandler(e)}
+          >
+            <option value="01">January</option>
+            <option value="02">February</option>
+            <option value="03">March</option>
+            <option value="04">April</option>
+            <option value="05">May</option>
+            <option value="06">June</option>
+            <option value="07">July</option>
+            <option value="08">August</option>
+            <option value="09">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
+          </select>
         </div>
 
         <div className="form-group">
@@ -111,8 +140,9 @@ const SingleUpload = props => {
           <input
             className="form-control"
             type="number"
+            min="2017"
             id="hiredDateYear"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           />
         </div>
 
@@ -122,7 +152,7 @@ const SingleUpload = props => {
             className="form-control"
             type="number"
             id="lastDayWorkedMonth"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           />
         </div>
 
@@ -131,14 +161,15 @@ const SingleUpload = props => {
           <input
             className="form-control"
             type="number"
+            min="2017"
             id="lastDayWorkedYear"
-            onChange={e => props.onInputHandler(e)}
+            onChange={e => onInputHandler(e)}
           />
         </div>
 
         <button
           className="btn btn-primary btn-lg btn-block"
-          onClick={e => props.onInputHandler(e)}
+          onClick={e => onSubmitHandler(null, push)}
         >
           Submit Application
         </button>
@@ -147,14 +178,17 @@ const SingleUpload = props => {
   );
 };
 
-const mapStateToProps = state => {
+const mapStateToProps = ({ user, jobs }) => {
   return {
-    user: state.user,
-    jobs: state.jobs
+    user: user,
+    jobs: jobs
   };
 };
 
-const mapDispatchToProps = { onInputHandler };
+const mapDispatchToProps = {
+  onInputHandler: actions.onInputHandler,
+  onSubmitHandler: actions.onSubmitNewContentHandler
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(SingleUpload);
 

@@ -1,11 +1,13 @@
 // NPM Modules
 import React from "react";
 // Redux
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { Router, Route, Switch } from "react-router-dom";
 import { Provider } from "react-redux";
 // Redux Store
 import store from "../redux/store";
+import history from "../utils/history";
 // Components
+import PrivateRoute from "../utils/PrivateRoute";
 import Header from "../containers/Header";
 import LoginPage from "./UserActions/LoginPage";
 import ErrorPage from "./ErrorPage";
@@ -18,14 +20,18 @@ import ViewRecruiters from "./ViewRecruiterData/ViewRecruiters";
 const App = () => {
   return (
     <Provider store={store}>
-      <Router>
+      <Router history={history}>
         <Header />
         <Switch>
           <Route path="/" component={ViewApplications} exact />
-          <Route path="/recruiters" component={ViewRecruiters} exact />
-          <Route path="/add/application" component={AddApplication} exact />
-          <Route path="/add/recruiter" component={AddRecruiter} exact />
           <Route path="/login" component={LoginPage} exact />
+          <Route path="/recruiters" component={ViewRecruiters} exact />
+          <PrivateRoute
+            path="/add/application"
+            component={AddApplication}
+            exact
+          />
+          <PrivateRoute path="/add/recruiter" component={AddRecruiter} exact />
           <Route path="/*" component={ErrorPage} />
         </Switch>
       </Router>

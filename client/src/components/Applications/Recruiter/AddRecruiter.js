@@ -1,5 +1,4 @@
 import React from "react";
-
 // Components
 import Tabs from "../../../containers/Tab";
 import SingleRecruiter from "./SingleRecruiterUpload";
