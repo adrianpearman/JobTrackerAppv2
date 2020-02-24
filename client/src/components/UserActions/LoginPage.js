@@ -1,13 +1,20 @@
 import React from "react";
-
-class Login extends React.Component {
+import Tabs from "../../containers/Tab";
+import CreateUserForm from "./CreateUserForm";
+import LoginForm from "./LoginForm";
+class LoginPage extends React.Component {
   render() {
     return (
-      <div>
-        <h1>Login Component</h1>
-      </div>
+      <Tabs>
+        <div title="Login">
+          <LoginForm />
+        </div>
+        <div title="Create User">
+          <CreateUserForm />
+        </div>
+      </Tabs>
     );
   }
 }
 
-export default Login;
+export default LoginPage;
