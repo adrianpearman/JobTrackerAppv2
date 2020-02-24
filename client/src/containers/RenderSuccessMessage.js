@@ -1,7 +1,6 @@
 import React from "react";
 
 const renderSuccessfulMessage = props => {
-  console.log(props);
   switch (props.uploadSuccessful) {
     case true:
       return (

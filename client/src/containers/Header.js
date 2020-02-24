@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { connect } from "react-redux";
 
-const Header = () => {
+const Header = ({ ui }) => {
   return (
     <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
       <h1>
@@ -22,17 +23,20 @@ const Header = () => {
               View Recruiters
             </Link>
           </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/add/application">
-              Add Application
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link className="nav-link" to="/add/recruiter">
-              Add Recruiter
-            </Link>
-          </li>
-
+          {ui.isLoggedIn ? (
+            <>
+              <li className="nav-item">
+                <Link className="nav-link" to="/add/application">
+                  Add Application
+                </Link>
+              </li>
+              <li className="nav-item">
+                <Link className="nav-link" to="/add/recruiter">
+                  Add Recruiter
+                </Link>
+              </li>
+            </>
+          ) : null}
           <li className="nav-item">
             <Link className="nav-link" to="/login">
               Login
@@ -44,4 +48,10 @@ const Header = () => {
   );
 };
 
-export default Header;
+const mapStateToProps = ({ ui }) => {
+  return {
+    ui
+  };
+};
+
+export default connect(mapStateToProps)(Header);
