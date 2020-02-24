@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 import Tabs from "../../containers/Tab";
 import ViewRecruiterConversion from "./ViewRecruiterConversion";
-import ViewRecruiterProgress from "./ViewRecruiterProgress";
+import ViewRecruiterProgress from "./ViewRecruiterMonthly";
 
 class ViewRecruiters extends Component {
   render() {
