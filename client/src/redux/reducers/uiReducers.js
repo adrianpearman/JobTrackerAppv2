@@ -1,6 +1,8 @@
 import ACTIONS from "../actions/types";
 
-const initialState = {};
+const initialState = {
+  isLoggedIn: true
+};
 
 export const uiReducer = (state = initialState, action) => {
   switch (action.type) {
