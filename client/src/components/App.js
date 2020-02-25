@@ -14,7 +14,7 @@ import ErrorPage from "./ErrorPage";
 // Pages
 import AddApplication from "./Applications/Jobs/AddApplication";
 import AddRecruiter from "./Applications/Recruiter/AddRecruiter";
-import ViewApplications from "./ViewApplicationData/ViewJobs";
+import ViewApplications from "./ViewApplicationData/ViewApplications";
 import ViewRecruiters from "./ViewRecruiterData/ViewRecruiters";
 
 const App = () => {
