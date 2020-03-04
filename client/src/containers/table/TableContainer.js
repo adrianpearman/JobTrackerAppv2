@@ -4,7 +4,7 @@ import TableRow from "./TableRow";
 
 const TableContainer = ({ recruiter }) => {
   return (
-    <table className="table table-hover mt-5">
+    <table className="table table-hover mt-2">
       <TableHead recruiter={recruiter} />
       <tbody>
         <TableRow recruiter={recruiter} />
