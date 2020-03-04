@@ -38,7 +38,68 @@ let newJobObject = ({
 };
 
 const applicationController = {
-  getInitApplications: async () => {},
+  getInitApplications: async (req, res) => {
+    try {
+      // get full list of applications
+      let applications = await Jobs.find({});
+      // Number of applications
+      let applicationsLength = applications.length;
+      // get last 10 applications
+      let applicationsLast10 = applications
+        .slice(Math.max(applications.length - 10, 0))
+        .reverse();
+
+      const countApplicationStatus = arr => {
+        let appStatus0 = 0;
+        let appStatus1 = 0;
+        let appStatus2 = 0;
+        let appStatus3 = 0;
+
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].response === 0) {
+            appStatus0++;
+          } else if (arr[i].response === 1) {
+            appStatus1++;
+          } else if (arr[i].response === 2) {
+            appStatus2++;
+          } else if (arr[i].response === 3) {
+            appStatus3++;
+          }
+        }
+
+        return [
+          {
+            status: "Not Viewed",
+            applications: appStatus0
+          },
+          {
+            status: "Application Viewed",
+            applications: appStatus1
+          },
+          {
+            status: "Application Declined",
+            applications: appStatus2
+          },
+          {
+            status: "Offer Provided",
+            applications: appStatus3
+          }
+        ];
+      };
+
+      let applicationResponses = countApplicationStatus(applications);
+
+      let data = {
+        applications,
+        applicationsLength,
+        applicationsLast10,
+        applicationResponses
+      };
+      return res.send(data);
+    } catch (err) {
+      return res.status(400).send(err);
+    }
+  },
   getAllApplications: async (req, res) => {
     try {
       let jobs = await Jobs.find({});

@@ -5,7 +5,10 @@ const isLoggedIn = require("../middlewares/isLoggedIn");
 
 //GET REQUESTS
 // retrieve initial data
-router.get("/api/data/application/init", () => {});
+router.get(
+  "/api/data/application/init",
+  applicationController.getInitApplications
+);
 // retieve all of the applications
 router.get(
   "/api/data/application/all",
