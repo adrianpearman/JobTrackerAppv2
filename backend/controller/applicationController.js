@@ -38,7 +38,8 @@ let newJobObject = ({
 };
 
 const applicationController = {
-  getAllJobs: async (req, res) => {
+  getInitApplications: async () => {},
+  getAllApplications: async (req, res) => {
     try {
       let jobs = await Jobs.find({});
       res.json(jobs);
@@ -46,7 +47,7 @@ const applicationController = {
       res.status(400).send({ errMsg: err });
     }
   },
-  getJobsPagination: async (req, res) => {
+  getApplicationsPagination: async (req, res) => {
     const { startingPoint, amountOfRecords } = req.body;
 
     try {
@@ -58,7 +59,7 @@ const applicationController = {
       res.status(400).send({ errMsg: err });
     }
   },
-  getSingleJob: async (req, res) => {
+  getSingleApplication: async (req, res) => {
     const { jobId } = req.body;
 
     let job = await Jobs.findById(jobId);
@@ -75,7 +76,7 @@ const applicationController = {
       res.status(400).send({ errMsg: err });
     }
   },
-  updateJobApplication: async (req, res) => {
+  updateApplication: async (req, res) => {
     const { userId, jobId } = req.body;
     const updatedContent = req.body;
 
@@ -160,7 +161,7 @@ const applicationController = {
       });
     }
   },
-  getJobsPerMonth: async (req, res) => {
+  getApplicationsPerMonth: async (req, res) => {
     const { month } = req.body;
 
     try {
@@ -170,7 +171,7 @@ const applicationController = {
       res.status(400).send(err);
     }
   },
-  getJobsPerYear: async (req, res) => {
+  getApplicationsPerYear: async (req, res) => {
     const { year } = req.body;
 
     try {
@@ -180,7 +181,7 @@ const applicationController = {
       res.status(400).send(err);
     }
   },
-  getJobsFromCompany: async (req, res) => {
+  getApplicationsFromCompany: async (req, res) => {
     const { companyName } = req.body;
 
     try {

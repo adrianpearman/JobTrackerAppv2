@@ -4,23 +4,37 @@ const applicationController = require("../controller/applicationController");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 
 //GET REQUESTS
+// retrieve initial data
+router.get("/api/data/application/init", () => {});
 // retieve all of the applications
-router.get("/api/data/application/all", applicationController.getAllJobs);
+router.get(
+  "/api/data/application/all",
+  applicationController.getAllApplications
+);
 // retrieve paginated list of items
-router.get("/api/data/application", applicationController.getJobsPagination);
+router.get(
+  "/api/data/application",
+  applicationController.getApplicationsPagination
+);
 // retrieve a single application
-router.get("/api/data/application/single", applicationController.getSingleJob);
+router.get(
+  "/api/data/application/single",
+  applicationController.getSingleApplication
+);
 // retrieve for month
 router.get(
   "/api/data/application/month",
-  applicationController.getJobsPerMonth
+  applicationController.getApplicationsPerMonth
 );
 // retrieve for year
-router.get("/api/data/application/year", applicationController.getJobsPerYear);
+router.get(
+  "/api/data/application/year",
+  applicationController.getApplicationsPerYear
+);
 // retrieve company name
 router.get(
   "/api/data/application/company",
-  applicationController.getJobsFromCompany
+  applicationController.getApplicationsFromCompany
 );
 
 //POST REQUESTS
@@ -37,7 +51,7 @@ router.post(
 router.put(
   "/api/data/application/single",
   isLoggedIn,
-  applicationController.updateJobApplication
+  applicationController.updateApplication
 );
 
 //DELETE REQUESTS
