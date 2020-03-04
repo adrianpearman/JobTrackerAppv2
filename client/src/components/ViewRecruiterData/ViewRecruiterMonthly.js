@@ -6,7 +6,6 @@ class ViewRecruiterProgress extends Component {
   render() {
     return (
       <div>
-        <h1>ViewRecruiterProgress</h1>
         <LineChart />
         <TableContainer recruiter={true} />
       </div>

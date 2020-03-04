@@ -6,7 +6,6 @@ class ViewMonthlyProgress extends Component {
   render() {
     return (
       <div>
-        <h1>ViewMonthlyProgress</h1>
         <LineChart />
         <TableContainer recruiter={false} />
       </div>
