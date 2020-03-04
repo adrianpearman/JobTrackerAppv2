@@ -10,5 +10,19 @@ $green: rgba(52, 153, 67, 1);
 $red: rgba(255, 74, 64, 1);
 $yellow: rgba(245, 223, 76, 1);
 $grey: rgba(68, 68, 68, 1);
+$grey2: rgba(26, 26, 26, 1);
 $grey-light: rgba(170, 170, 170, 1);
+$grey-light-2: rgba(136, 136, 136, 1);
 $white: rgba(238, 238, 238, 1);
+
+.table {
+  border: 1px solid $grey-light-2;
+
+  th,
+  td {
+    padding: 1rem;
+  }
+}
+
+// font-family: 'Trade Winds', cursive;
+// font-family: 'Oswald', sans-serif;

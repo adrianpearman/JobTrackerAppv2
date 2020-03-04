@@ -3,9 +3,10 @@
   padding: 25px;
   font-family: sans-serif;
   color: $grey;
+  overflow: auto;
 }
 
-ul.inline {
+.inline {
   list-style: none;
   padding: 0;
   margin-bottom: 0;
