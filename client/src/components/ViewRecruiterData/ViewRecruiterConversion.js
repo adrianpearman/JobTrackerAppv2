@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
-import actions from "../../redux/actions";
-import PieChart from "../../containers/charts/PieChart";
-import TableContainer from "../../containers/table/TableContainer";
+import React from "react";
+import PieChart from "../../containers/Charts/PieChart";
+import TableContainer from "../../containers/Table/TableContainer";
 
 const ViewRecruiterConversion = props => {
   return (

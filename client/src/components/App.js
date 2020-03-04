@@ -8,7 +8,7 @@ import store from "../redux/store";
 import history from "../utils/history";
 // Components
 import PrivateRoute from "../utils/PrivateRoute";
-import Header from "../containers/header/Header";
+import Header from "../containers/Header/Header";
 import LoginPage from "./UserActions/LoginPage";
 import ErrorPage from "./ErrorPage";
 // Pages

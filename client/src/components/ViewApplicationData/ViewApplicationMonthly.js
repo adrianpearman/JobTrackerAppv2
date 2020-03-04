@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import LineChart from "../../containers/charts/LineChart";
-import TableContainer from "../../containers/table/TableContainer";
+import LineChart from "../../containers/Charts/LineChart";
+import TableContainer from "../../containers/Table/TableContainer";
 
 class ViewMonthlyProgress extends Component {
   render() {

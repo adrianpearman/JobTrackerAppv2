@@ -1,12 +1,22 @@
 import React from "react";
-import UpdateTableContainer from "../../containers/table/UpdateTableContainer";
+import { connect } from "react-redux";
+import UpdateTableContainer from "../../containers/Table/UpdateTableContainer";
 
-const AdminApplications = ({ recruiter }) => {
+const AdminApplications = ({ applications, recruiter }) => {
   return (
     <>
-      <UpdateTableContainer recruiter={recruiter} />
+      <UpdateTableContainer
+        recruiter={recruiter}
+        data={applications.applicationList}
+      />
     </>
   );
 };
 
-export default AdminApplications;
+const mapStateToProps = ({ application }) => {
+  return {
+    applications: application
+  };
+};
+
+export default connect(mapStateToProps)(AdminApplications);
