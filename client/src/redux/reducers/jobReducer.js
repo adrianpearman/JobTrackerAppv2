@@ -9,13 +9,13 @@ export const jobsReducer = (state = initialState, action) => {
   switch (action.type) {
     case ACTIONS.INITIALIZE_JOB_STATE: {
       return {
-        ...state,
-        ...action.payload
+        ...state
       };
     }
     case ACTIONS.RETRIEVE_JOBS_LIST: {
       return {
-        ...state
+        ...state,
+        jobList: action.payload.data
       };
     }
     case ACTIONS.RETRIEVE_JOBS_LIST_PAGINATION: {
@@ -25,7 +25,8 @@ export const jobsReducer = (state = initialState, action) => {
     }
     case ACTIONS.RETRIEVE_SINGLE_JOB: {
       return {
-        ...state
+        ...state,
+        singleJob: action.payload.data
       };
     }
     case ACTIONS.RETRIEVE_DATA_ERROR_JOBS: {

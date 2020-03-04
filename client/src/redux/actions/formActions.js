@@ -28,7 +28,10 @@ const onInputHandler = (e, form) => dispatch => {
   });
 };
 const disableSubmitButton = () => () => {};
-const onSubmitNewContentHandler = (form, done) => (dispatch, getState) => {
+const onSubmitNewContentHandler = (form, done) => async (
+  dispatch,
+  getState
+) => {
   let actionType =
     form === "recruiter" ? ACTIONS.ADD_NEW_RECRUITER : ACTIONS.ADD_NEW_JOB;
   let actionTypeError =
@@ -41,21 +44,19 @@ const onSubmitNewContentHandler = (form, done) => (dispatch, getState) => {
       : getState().form.applicationForm;
   content.userId = getState().user.userId;
 
-  axios
-    .post("/api/data/application/", content)
-    .then(data => {
-      dispatch({
-        type: actionType,
-        payload: data
-      });
-      history.push("/");
-    })
-    .catch(err => {
-      dispatch({
-        type: actionTypeError,
-        payload: err.response.data
-      });
+  try {
+    let submitContent = await axios.post("/api/data/application/", content);
+    dispatch({
+      type: actionType,
+      payload: submitContent
     });
+    history.push("/");
+  } catch (err) {
+    dispatch({
+      type: actionTypeError,
+      payload: err.response.data
+    });
+  }
 };
 const onSubmitUpdatedContentHandler = () => (dispatch, getState) => {
   console.log(getState());
@@ -108,7 +109,7 @@ const handleFileSelect = e => dispatch => {
   };
   reader.readAsText(file);
 };
-const handleSubmitFile = e => (dispatch, getState) => {
+const handleSubmitFile = e => async (dispatch, getState) => {
   let data;
   if (e === "csvDataApplication") {
     data = { data: getState().bulkUploadReducer.csvDataApplication };
@@ -121,41 +122,38 @@ const handleSubmitFile = e => (dispatch, getState) => {
       ? "/api/data/application/bulk"
       : "/api/data/recruiter/bulk";
 
-  axios
-    .post(url, data)
-    .then(res => {
-      console.log(res);
-      document.getElementById(e).value = "";
+  try {
+    await axios.post(url, data);
+    document.getElementById(e).value = "";
+    dispatch({
+      type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
+      payload: true
+    });
+    dispatch({
+      type: ACTIONS.CSV_JOBS_UPLOAD_VALID,
+      payload: null
+    });
+    dispatch({
+      type: ACTIONS.CSV_JOBS_UPLOAD_DATA,
+      payload: {
+        id: e,
+        data: null
+      }
+    });
+    setTimeout(() => {
       dispatch({
         type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
-        payload: true
-      });
-      dispatch({
-        type: ACTIONS.CSV_JOBS_UPLOAD_VALID,
         payload: null
       });
-      dispatch({
-        type: ACTIONS.CSV_JOBS_UPLOAD_DATA,
-        payload: {
-          id: e,
-          data: null
-        }
-      });
-      setTimeout(() => {
-        dispatch({
-          type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
-          payload: null
-        });
-      }, 2000);
-    })
-    .catch(err => {
-      dispatch({
-        type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
-        payload: false
-      });
-
-      console.log(err);
+    }, 2000);
+  } catch (err) {
+    dispatch({
+      type: ACTIONS.CSV_JOBS_UPLOAD_SUCCESSFULL,
+      payload: false
     });
+
+    console.log(err);
+  }
 };
 const clearSubmitFile = e => dispatch => {
   document.getElementById(`${e}`).value = "";

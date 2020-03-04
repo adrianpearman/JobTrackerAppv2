@@ -78,16 +78,24 @@ export const formReducer = (state = initialState, action) => {
         }
       };
     }
+
     case ACTIONS.ADD_NEW_JOB_ERROR: {
+      let errors = action.payload.errMsg
+        ? action.payload.errMsg.errors
+        : {
+            applicationLink: {
+              message: ""
+            }
+          };
       return {
         ...state,
         applicationSubmit: {
           ...state.applicationSubmit,
           success: false,
           applicationId: "",
-          recruiterName: "",
+          companyName: "",
           errorMsg: action.payload.message,
-          errors: Object.entries(action.payload.errMsg.errors).map(error => {
+          errors: Object.entries(errors).map(error => {
             return error[0];
           })
         }
@@ -100,7 +108,7 @@ export const formReducer = (state = initialState, action) => {
           ...state.recruiterSubmit,
           success: true,
           applicationId: action.payload.data._id,
-          companyName: action.payload.data.recruiterName,
+          recruiterName: action.payload.data.recruiterName,
           errors: [],
           errorMsg: ""
         }
@@ -112,7 +120,7 @@ export const formReducer = (state = initialState, action) => {
           ...state.recruiterSubmit,
           success: false,
           applicationId: "",
-          companyName: "",
+          recruiterName: "",
           errorMsg: action.payload.message,
           errors: Object.entries(action.payload.errMsg.errors).map(error => {
             return error[0];
