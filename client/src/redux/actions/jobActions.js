@@ -16,11 +16,16 @@ const changePaginationEnding = value => dispatch => {
     payload: value
   });
 };
-const intializeJobState = job => dispatch => {
-  dispatch({
-    type: ACTIONS.INITIALIZE_JOB_STATE,
-    payload: job
-  });
+const intializeJobState = () => dispatch => {
+  axios
+    .get("/api/data/application/init")
+    .then(data => {
+      dispatch({
+        type: ACTIONS.INITIALIZE_JOB_STATE,
+        payload: data
+      });
+    })
+    .catch(err => errorHandlerAxios(err));
 };
 const fetchJobs = () => dispatch => {
   axios

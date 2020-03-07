@@ -1,109 +1,40 @@
 import ACTIONS from "../actions/types";
 
 const initialState = {
-  applicationList: [
-    {
-      userId: "5cfbe3c271d5ee293ab8a643",
-      applicationId: "h3gjahgfjhsgfjhsgf23492894",
-      companyName: "Company One",
-      applicationDate: 50398503985093853905,
-      applicationLink: "ljfhksfhkjshfjkshfs",
-      applicationPlatform: "LinkedIn",
-      applicationMonth: 3,
-      applicationYear: 2020,
-      response: 2,
-      interview: false,
-      hired: false,
-      hiredDateMonth: 0,
-      hiredDateYear: 0,
-      lastDayWorkedMonth: 0,
-      lastDayWorkedYear: 0
-    },
-    {
-      userId: "5cfbe3c271d5ee293ab8a643",
-      applicationId: "h3gjahgfjhsgfjhsgf23492894",
-      companyName: "Company One",
-      applicationDate: 50398503985093853905,
-      applicationLink: "ljfhksfhkjshfjkshfs",
-      applicationPlatform: "LinkedIn",
-      applicationMonth: 3,
-      applicationYear: 2020,
-      response: 2,
-      interview: false,
-      hired: false,
-      hiredDateMonth: 0,
-      hiredDateYear: 0,
-      lastDayWorkedMonth: 0,
-      lastDayWorkedYear: 0
-    },
-    {
-      userId: "5cfbe3c271d5ee293ab8a643",
-      applicationId: "h3gjahgfjhsgfjhsgf23492894",
-      companyName: "Company One",
-      applicationDate: 50398503985093853905,
-      applicationLink: "ljfhksfhkjshfjkshfs",
-      applicationPlatform: "LinkedIn",
-      applicationMonth: 3,
-      applicationYear: 2020,
-      response: 2,
-      interview: false,
-      hired: false,
-      hiredDateMonth: 0,
-      hiredDateYear: 0,
-      lastDayWorkedMonth: 0,
-      lastDayWorkedYear: 0
-    },
-    {
-      userId: "5cfbe3c271d5ee293ab8a643",
-      applicationId: "h3gjahgfjhsgfjhsgf23492894",
-      companyName: "Company One",
-      applicationDate: 50398503985093853905,
-      applicationLink: "ljfhksfhkjshfjkshfs",
-      applicationPlatform: "LinkedIn",
-      applicationMonth: 3,
-      applicationYear: 2020,
-      response: 2,
-      interview: false,
-      hired: false,
-      hiredDateMonth: 0,
-      hiredDateYear: 0,
-      lastDayWorkedMonth: 0,
-      lastDayWorkedYear: 0
-    },
-    {
-      userId: "5cfbe3c271d5ee293ab8a643",
-      applicationId: "h3gjahgfjhsgfjhsgf23492894",
-      companyName: "Company One",
-      applicationDate: 50398503985093853905,
-      applicationLink: "ljfhksfhkjshfjkshfs",
-      applicationPlatform: "LinkedIn",
-      applicationMonth: 3,
-      applicationYear: 2020,
-      response: 2,
-      interview: false,
-      hired: false,
-      hiredDateMonth: 0,
-      hiredDateYear: 0,
-      lastDayWorkedMonth: 0,
-      lastDayWorkedYear: 0
-    }
-  ],
-  applicationListLength: 5,
-  applicationListLast10: [],
+  applicationList: [],
+  applicationsLast10: [],
+  applicationResponses: [],
+  applicationsPerMonth: [],
+  applicationsTotalNumber: 0,
+  currentMonthApplications: [],
   singleApplication: {}
 };
 
 export const applicationReducer = (state = initialState, action) => {
   switch (action.type) {
     case ACTIONS.INITIALIZE_JOB_STATE: {
+      const {
+        applicationsLast10,
+        applicationResponses,
+        applicationsPerMonth,
+        applicationsTotalNumber,
+        currentMonthApplications
+      } = action.payload.data;
+
       return {
-        ...state
+        ...state,
+        applicationsLast10,
+        applicationResponses,
+        applicationsPerMonth,
+        applicationsTotalNumber,
+        currentMonthApplications
       };
     }
     case ACTIONS.RETRIEVE_JOBS_LIST: {
+      const { applications: applicationList } = action.payload.data;
       return {
         ...state,
-        applicationList: action.payload.data
+        applicationList
       };
     }
     case ACTIONS.RETRIEVE_JOBS_LIST_PAGINATION: {
