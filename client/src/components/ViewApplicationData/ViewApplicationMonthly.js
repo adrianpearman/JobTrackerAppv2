@@ -1,16 +1,21 @@
-import React, { Component } from "react";
+import React from "react";
+import { connect } from "react-redux";
 import LineChart from "../../containers/Charts/LineChart";
 import TableContainer from "../../containers/Table/TableContainer";
 
-class ViewMonthlyProgress extends Component {
-  render() {
-    return (
-      <div>
-        <LineChart />
-        <TableContainer recruiter={false} />
-      </div>
-    );
-  }
-}
+const ViewMonthlyProgress = ({ application }) => {
+  return (
+    <div>
+      <LineChart data={application.applicationsPerMonth} />
+      <TableContainer data={application} recruiter={false} />
+    </div>
+  );
+};
 
-export default ViewMonthlyProgress;
+const mapStateToProps = ({ application }) => {
+  return {
+    application
+  };
+};
+
+export default connect(mapStateToProps)(ViewMonthlyProgress);

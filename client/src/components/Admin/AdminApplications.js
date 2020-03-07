@@ -1,8 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { connect } from "react-redux";
+import actions from "../../redux/actions";
 import UpdateTableContainer from "../../containers/Table/UpdateTableContainer";
 
-const AdminApplications = ({ applications, recruiter }) => {
+const AdminApplications = ({ applications, getAllApplications, recruiter }) => {
+  useEffect(() => {
+    getAllApplications();
+  }, []);
+
   return (
     <>
       <UpdateTableContainer
@@ -19,4 +24,7 @@ const mapStateToProps = ({ application }) => {
   };
 };
 
-export default connect(mapStateToProps)(AdminApplications);
+const mapDispatchToProps = {
+  getAllApplications: actions.fetchJobs
+};
+export default connect(mapStateToProps, mapDispatchToProps)(AdminApplications);

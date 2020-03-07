@@ -6,9 +6,7 @@ const DeskTopHeader = ({ ui }) => {
   return (
     <nav className="navigation">
       <span className="navigation__logo">
-        <Link className="navigation__logo--text" to="/">
-          Job Tracker
-        </Link>
+        <p className="navigation__logo--text">Job Tracker</p>
       </span>
 
       <ul className="navigation__item--container">

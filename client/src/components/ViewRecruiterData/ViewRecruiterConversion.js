@@ -5,8 +5,8 @@ import TableContainer from "../../containers/Table/TableContainer";
 const ViewRecruiterConversion = props => {
   return (
     <div className="col-12">
-      <PieChart />
-      <TableContainer recruiter={true} />
+      <PieChart data={[]} recruiter={true} />
+      <TableContainer data={[]} recruiter={true} />
     </div>
   );
 };
