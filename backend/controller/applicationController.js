@@ -18,12 +18,13 @@ let newJobObject = ({
   userId
 }) => {
   return {
-    applicationDate: moment(
-      `${applicationYear}.${applicationMonth}.01`,
-      "YYYY.MM.DD"
-    ).unix(),
+    applicationDate:
+      moment(
+        `${applicationYear}.${applicationMonth + 1}.01`,
+        "YYYY.MM.DD"
+      ).unix() * 1000,
     applicationLink: applicationLink,
-    applicationMonth: applicationMonth,
+    applicationMonth: applicationMonth + 1,
     applicationPlatform: applicationPlatform,
     applicationSource: applicationSource,
     applicationYear: applicationYear,
@@ -40,15 +41,23 @@ let newJobObject = ({
 const applicationController = {
   getInitApplications: async (req, res) => {
     try {
-      // get full list of applications
+      // Base Variables
+      let dataContainer = [];
+      let month = new Date().getMonth() + 1;
+      let year = new Date().getFullYear();
+      let unix = moment(`${year}.${month}.01`, "YYYY.MM.DD").unix();
+      let baseUnix = moment(`2017.05.01`, "YYYY.MM.DD").unix();
+
+      //All applicants
       let applications = await Jobs.find({});
       // Number of applications
-      let applicationsLength = applications.length;
+      let applicationsTotalNumber = applications.length;
       // get last 10 applications
       let applicationsLast10 = applications
         .slice(Math.max(applications.length - 10, 0))
         .reverse();
 
+      // Count all the application response values
       const countApplicationStatus = arr => {
         let appStatus0 = 0;
         let appStatus1 = 0;
@@ -86,14 +95,63 @@ const applicationController = {
           }
         ];
       };
+      //  Count all of the monthly applications
+      const countMonthlyApplications = arr => {
+        let applicationMonths = {};
+        // Initialize Application Month
+        const initApplicationMonth = () => {
+          if (unix > baseUnix) {
+            month--;
+
+            if (month === 0) {
+              month = 12;
+              year = year - 1;
+            }
+
+            unix = moment(`${year}.${month}.01`, "YYYY.MM.DD").unix();
+            applicationMonths[unix] = 0;
+            return initApplicationMonth();
+          } else {
+            return;
+          }
+        };
+        initApplicationMonth();
+        //Seperate all of the values by the application date
+        for (let i = 0; i < arr.length; i++) {
+          if (!applicationMonths[arr[i].applicationDate]) {
+            applicationMonths[arr[i].applicationDate] = 1;
+          } else {
+            applicationMonths[arr[i].applicationDate]++;
+          }
+        }
+        console.log(applicationMonths);
+        // convert the value from an object to an array
+        for (const key in applicationMonths) {
+          if (applicationMonths.hasOwnProperty(key)) {
+            let data = {
+              date: new Date(parseInt(key) * 1000),
+              name: moment.unix(key).format("MMMM/YYYY"),
+              value: applicationMonths[key]
+            };
+            dataContainer.push(data);
+          }
+        }
+        return dataContainer;
+      };
+      // grab latest results for current month
+      let currentMonthApplications = await Jobs.find({
+        applicationDate: unix
+      });
 
       let applicationResponses = countApplicationStatus(applications);
+      let applicationsPerMonth = countMonthlyApplications(applications);
 
       let data = {
-        applications,
-        applicationsLength,
+        applicationsTotalNumber,
         applicationsLast10,
-        applicationResponses
+        applicationResponses,
+        applicationsPerMonth,
+        currentMonthApplications
       };
       return res.send(data);
     } catch (err) {
@@ -102,8 +160,8 @@ const applicationController = {
   },
   getAllApplications: async (req, res) => {
     try {
-      let jobs = await Jobs.find({});
-      res.json(jobs);
+      let applications = await Jobs.find({});
+      res.send({ applications });
     } catch (err) {
       res.status(400).send({ errMsg: err });
     }
@@ -112,10 +170,10 @@ const applicationController = {
     const { startingPoint, amountOfRecords } = req.body;
 
     try {
-      let jobs = await Jobs.find({})
+      let applications = await Jobs.find({})
         .skip(startingPoint)
         .limit(amountOfRecords);
-      res.json(jobs);
+      res.send({ applications });
     } catch (err) {
       res.status(400).send({ errMsg: err });
     }
@@ -123,16 +181,16 @@ const applicationController = {
   getSingleApplication: async (req, res) => {
     const { jobId } = req.body;
 
-    let job = await Jobs.findById(jobId);
+    let application = await Jobs.findById(jobId);
     //Validate whether job exists
-    if (!job) {
+    if (!application) {
       return res.status(400).send({
         message: "no application found"
       });
     }
 
     try {
-      res.json(job);
+      res.send({ application });
     } catch (err) {
       res.status(400).send({ errMsg: err });
     }
@@ -151,7 +209,7 @@ const applicationController = {
     }
 
     try {
-      let job = await Jobs.updateOne({ _id: jobId }, updatedContent);
+      await Jobs.updateOne({ _id: jobId }, updatedContent);
       res.send({
         message: `Successfully updated Jo ID: ${jobId}`,
         updated: updatedContent
@@ -195,7 +253,6 @@ const applicationController = {
       });
     }
   },
-  // bulkUpload from client provided json object
   bulkAddApllication: (req, res) => {
     // Value submitted from the client
     let data = req.body.data;
@@ -226,8 +283,8 @@ const applicationController = {
     const { month } = req.body;
 
     try {
-      let jobs = await Jobs.find({ applicationMonth: month });
-      res.json(jobs);
+      let applications = await Jobs.find({ applicationMonth: month });
+      res.send({ applications });
     } catch (err) {
       res.status(400).send(err);
     }
@@ -236,8 +293,8 @@ const applicationController = {
     const { year } = req.body;
 
     try {
-      let jobs = await Jobs.find({ applicationYear: year });
-      res.json(jobs);
+      let applications = await Jobs.find({ applicationYear: year });
+      res.send({ applications });
     } catch (err) {
       res.status(400).send(err);
     }
@@ -246,8 +303,8 @@ const applicationController = {
     const { companyName } = req.body;
 
     try {
-      let jobs = await Jobs.find({ companyName: companyName });
-      res.json(jobs);
+      let applications = await Jobs.find({ companyName: companyName });
+      res.send({ applications });
     } catch (err) {
       res.status(400).send(err);
     }
