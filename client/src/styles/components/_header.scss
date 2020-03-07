@@ -6,11 +6,12 @@
   padding: 1rem;
 
   &__logo {
-    a {
+    p {
       color: $white;
       font-family: "Oswald", sans-serif;
       text-transform: uppercase;
       font-size: 1.2rem;
+      margin: 0;
     }
   }
 }
