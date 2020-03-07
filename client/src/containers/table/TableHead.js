@@ -19,7 +19,7 @@ const RecruiterTableHead = () => {
     <tr className="table-primary">
       <th scope="col">Recruiter Name</th>
       <th scope="col">Recruiter Company</th>
-      <th scope="col">Date</th>
+      <th scope="col">Recruiter Platform</th>
       <th scope="col">Month</th>
       <th scope="col">Year</th>
       <th scope="col">Recruiter Role</th>
