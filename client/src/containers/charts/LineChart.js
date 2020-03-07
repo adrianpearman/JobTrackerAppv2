@@ -2,27 +2,15 @@ import React from "react";
 import * as am4core from "@amcharts/amcharts4/core";
 import * as am4charts from "@amcharts/amcharts4/charts";
 import am4themes_animated from "@amcharts/amcharts4/themes/animated";
-
-am4core.useTheme(am4themes_animated);
+import _ from "lodash";
 
 class LineChart extends React.Component {
-  componentDidMount() {
+  initChart() {
+    am4core.useTheme(am4themes_animated);
     let chart = am4core.create("chartdiv", am4charts.XYChart);
-
     chart.paddingRight = 20;
-
-    let data = [];
-    let visits = 10;
-    for (let i = 1; i < 366; i++) {
-      visits += Math.round((Math.random() < 0.5 ? 1 : -1) * Math.random() * 10);
-      data.push({
-        date: new Date(2018, 0, i),
-        name: "name" + i,
-        value: visits
-      });
-    }
-
-    chart.data = data;
+    chart.data = this.props.data;
+    chart.cursor = new am4charts.XYCursor();
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
     dateAxis.renderer.grid.template.location = 0;
@@ -36,7 +24,6 @@ class LineChart extends React.Component {
     series.dataFields.valueY = "value";
 
     series.tooltipText = "{valueY.value}";
-    chart.cursor = new am4charts.XYCursor();
 
     let scrollbarX = new am4charts.XYChartScrollbar();
     scrollbarX.series.push(series);
@@ -44,11 +31,21 @@ class LineChart extends React.Component {
 
     this.chart = chart;
   }
+  componentDidMount() {
+    this.initChart();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (_.isEqual(prevProps.data, this.props.data)) {
+      if (!this.chart._disposed) {
+        this.chart.dispose();
+      }
+      this.initChart();
+    }
+  }
 
   componentWillUnmount() {
-    if (this.chart) {
-      this.chart.dispose();
-    }
+    this.chart.dispose();
   }
   render() {
     return <div id="chartdiv" style={{ width: "100%", height: "500px" }}></div>;
