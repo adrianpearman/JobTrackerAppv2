@@ -53,9 +53,9 @@ const applicationController = {
       // Number of applications
       let applicationsTotalNumber = applications.length;
       // get last 10 applications
-      let applicationsLast10 = applications
-        .slice(Math.max(applications.length - 10, 0))
-        .reverse();
+      let applicationsLast10 = await Jobs.find({})
+        .sort({ appliationDate: -1 })
+        .limit(10);
 
       // Count all the application response values
       const countApplicationStatus = arr => {
@@ -101,15 +101,13 @@ const applicationController = {
         // Initialize Application Month
         const initApplicationMonth = () => {
           if (unix > baseUnix) {
+            unix = moment(`${year}.${month}.01`, "YYYY.MM.DD").unix();
+            applicationMonths[unix] = 0;
             month--;
-
             if (month === 0) {
               month = 12;
               year = year - 1;
             }
-
-            unix = moment(`${year}.${month}.01`, "YYYY.MM.DD").unix();
-            applicationMonths[unix] = 0;
             return initApplicationMonth();
           } else {
             return;
@@ -124,7 +122,6 @@ const applicationController = {
             applicationMonths[arr[i].applicationDate]++;
           }
         }
-        console.log(applicationMonths);
         // convert the value from an object to an array
         for (const key in applicationMonths) {
           if (applicationMonths.hasOwnProperty(key)) {
