@@ -1,8 +1,7 @@
 import React from "react";
 import { connect } from "react-redux";
 import UpdateTableHead from "./UpdateTableHead";
-import UpdateJobTableRow from "./UpdateJobTableRow";
-import UpdateRecruiterTableRow from "./UpdateRecruiterTableRow";
+import UpdateTableRow from "./UpdateTableRow";
 import Modal from "../Modal/Modal";
 import actions from "../../redux/actions";
 
@@ -14,23 +13,14 @@ const TableContainer = ({ recruiter, data, toggleModal }) => {
         <UpdateTableHead recruiter={recruiter} />
         <tbody>
           {data.map((content, index) => {
-            if (recruiter) {
-              return (
-                <UpdateRecruiterTableRow
-                  key={index}
-                  content={content}
-                  toggleModal={toggleModal}
-                />
-              );
-            } else {
-              return (
-                <UpdateJobTableRow
-                  key={index}
-                  content={content}
-                  toggleModal={toggleModal}
-                />
-              );
-            }
+            return (
+              <UpdateTableRow
+                content={content}
+                recruiter={recruiter}
+                key={index}
+                toggleModal={toggleModal}
+              />
+            );
           })}
         </tbody>
       </table>
