@@ -1,5 +1,5 @@
 const express = require("express");
-const router = express.Router();
+const router = express.Router({ mergeParams: true });
 const applicationController = require("../controller/applicationController");
 const isLoggedIn = require("../middlewares/isLoggedIn");
 
@@ -39,6 +39,11 @@ router.get(
   "/api/data/application/company",
   applicationController.getApplicationsFromCompany
 );
+// retrieve for spefic timeframe
+router.get(
+  "/api/data/application/timeframe",
+  applicationController.getApplicationsPerTimeFrame
+);
 
 //POST REQUESTS
 // add a single application
@@ -61,7 +66,7 @@ router.put(
 // delete a single job application
 router.delete(
   "/api/data/application",
-  isLoggedIn,
+  // isLoggedIn,
   applicationController.deleteApplication
 );
 
