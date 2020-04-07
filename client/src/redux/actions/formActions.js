@@ -27,30 +27,33 @@ const onInputHandler = (e, form) => dispatch => {
     payload: inputChange
   });
 };
+
 const disableSubmitButton = () => () => {};
-const onSubmitNewContentHandler = (form, done) => async (
-  dispatch,
-  getState
-) => {
-  let actionType =
-    form === "recruiter" ? ACTIONS.ADD_NEW_RECRUITER : ACTIONS.ADD_NEW_JOB;
-  let actionTypeError =
-    form === "recruiter"
-      ? ACTIONS.ADD_NEW_RECRUITER_ERROR
-      : ACTIONS.ADD_NEW_JOB_ERROR;
-  let content =
-    form === "recruiter"
-      ? getState().form.recruiterForm
-      : getState().form.applicationForm;
+
+const onSubmitNewContentHandler = form => async (dispatch, getState) => {
+  let actionType, actionTypeError, content, url, historyURL;
+  if (form === "recruiter") {
+    actionType = ACTIONS.ADD_NEW_RECRUITER;
+    actionTypeError = ACTIONS.ADD_NEW_RECRUITER_ERROR;
+    content = getState().form.recruiterForm;
+    url = "/api/data/recruiter/";
+    historyURL = "/recruiters";
+  } else {
+    actionType = ACTIONS.ADD_NEW_APPLICATION;
+    actionTypeError = ACTIONS.ADD_NEW_APPLICATION_ERROR;
+    content = getState().form.applicationForm;
+    url = "/api/data/application/";
+    historyURL = "/";
+  }
   content.userId = getState().user.userId;
 
   try {
-    let submitContent = await axios.post("/api/data/application/", content);
+    let submitContent = await axios.post(url, content);
     dispatch({
       type: actionType,
       payload: submitContent
     });
-    history.push("/");
+    history.push(historyURL);
   } catch (err) {
     dispatch({
       type: actionTypeError,
@@ -109,6 +112,7 @@ const handleFileSelect = e => dispatch => {
   };
   reader.readAsText(file);
 };
+
 const handleSubmitFile = e => async (dispatch, getState) => {
   let data;
   if (e === "csvDataApplication") {
@@ -155,6 +159,7 @@ const handleSubmitFile = e => async (dispatch, getState) => {
     console.log(err);
   }
 };
+
 const clearSubmitFile = e => dispatch => {
   document.getElementById(`${e}`).value = "";
   dispatch({
