@@ -2,16 +2,8 @@ const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
 const ApplicationSchema = new Schema({
-  userId: {
-    type: String,
-    required: true
-  },
   companyName: {
     type: String,
-    required: true
-  },
-  applicationDate: {
-    type: Number,
     required: true
   },
   applicationLink: {
@@ -24,24 +16,15 @@ const ApplicationSchema = new Schema({
   },
   applicationMonth: {
     type: Number,
-    required: true
+    default: new Date().getMonth() + 1
   },
   applicationYear: {
     type: Number,
-    required: true,
     default: new Date().getFullYear()
   },
-  // 0 - Not Viewed
-  // 1 - Representative has reached out to me
-  // 2 - Application Declined
-  // 3 - Offer provided
-  response: {
+  applicationDate: {
     type: Number,
-    default: 0
-  },
-  interview: {
-    type: Boolean,
-    default: false
+    required: true
   },
   hired: {
     type: Boolean,
@@ -55,6 +38,14 @@ const ApplicationSchema = new Schema({
     type: Number,
     default: 0
   },
+  hiredDate: {
+    type: Number,
+    default: 0
+  },
+  interview: {
+    type: Boolean,
+    default: false
+  },
   lastDayWorkedMonth: {
     type: Number,
     default: 0
@@ -62,6 +53,18 @@ const ApplicationSchema = new Schema({
   lastDayWorkedYear: {
     type: Number,
     default: 0
+  },
+  // 0 - Not Viewed
+  // 1 - Representative has reached out to me
+  // 2 - Application Declined
+  // 3 - Offer provided
+  response: {
+    type: Number,
+    default: 0
+  },
+  userId: {
+    type: String,
+    required: true
   }
 });
 

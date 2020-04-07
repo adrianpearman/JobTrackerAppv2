@@ -2,17 +2,60 @@ const mongoose = require("mongoose");
 const { Schema } = mongoose;
 
 const recruiterSchema = new Schema({
-  recruiterName: { type: String },
-  recruiterDate: { type: Number },
-  recruiterMonth: { type: String },
-  recruiterYear: { type: Number },
-  recruiterPlatform: { type: String },
-  recruiterRole: { type: String },
-  recruiterLeadToRole: { type: Boolean },
-  recruiterLeadToInterview: { type: Boolean },
-  recruiterContract: { type: Boolean },
-  recruiterHiringInternal: { type: Boolean },
-  recruiterCompany: { type: String }
+  recruiterMessage: {
+    type: String,
+    required: true
+  },
+  recruiterPlatform: {
+    type: String,
+    required: true
+  },
+  recruiterName: {
+    type: String,
+    required: true
+  },
+  recruiterRole: {
+    type: String,
+    required: true
+  },
+  recruiterMonth: {
+    type: Number,
+    required: true
+  },
+  recruiterYear: {
+    type: Number,
+    required: true
+  },
+  recruiterDate: {
+    type: Number,
+    required: true
+  },
+  recruiterCompany: {
+    type: String,
+    required: true
+  },
+  recruiterLeadToInterview: {
+    type: Boolean,
+    required: true
+  },
+  recruiterLeadToRole: {
+    type: Boolean,
+    required: true
+  },
+  recruiterHiringContract: {
+    type: Boolean,
+    required: true
+  },
+  recruiterHiringInternal: {
+    type: Boolean,
+    required: true
+  },
+  userId: {
+    type: String,
+    required: true
+  }
 });
 
-mongoose.model("recruiter", recruiterSchema);
+let Recruiter = mongoose.model("recruiter", recruiterSchema);
+
+module.exports = Recruiter;
