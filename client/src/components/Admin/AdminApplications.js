@@ -3,28 +3,41 @@ import { connect } from "react-redux";
 import actions from "../../redux/actions";
 import UpdateTableContainer from "../../containers/Table/UpdateTableContainer";
 
-const AdminApplications = ({ applications, getAllApplications, recruiter }) => {
+const AdminApplications = ({
+  applicationList,
+  getAllApplications,
+  getAllRecruiters,
+  recruiter,
+  recruiterList
+}) => {
   useEffect(() => {
     getAllApplications();
+    getAllRecruiters();
   }, []);
-
-  return (
-    <>
-      <UpdateTableContainer
-        recruiter={recruiter}
-        data={applications.applicationList}
-      />
-    </>
-  );
+  if (recruiter) {
+    return (
+      <>
+        <UpdateTableContainer recruiter={recruiter} data={recruiterList} />
+      </>
+    );
+  } else {
+    return (
+      <>
+        <UpdateTableContainer recruiter={recruiter} data={applicationList} />
+      </>
+    );
+  }
 };
 
-const mapStateToProps = ({ application }) => {
+const mapStateToProps = ({ application, recruiter }) => {
   return {
-    applications: application
+    applicationList: application.applicationList,
+    recruiterList: recruiter.recruiterList
   };
 };
 
 const mapDispatchToProps = {
-  getAllApplications: actions.fetchJobs
+  getAllApplications: actions.fetchApplications,
+  getAllRecruiters: actions.fetchRecruiters
 };
 export default connect(mapStateToProps, mapDispatchToProps)(AdminApplications);

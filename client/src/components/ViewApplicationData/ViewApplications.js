@@ -23,7 +23,7 @@ const ViewJobs = ({ init }) => {
 };
 
 const mapDispatchToProps = {
-  init: actions.intializeJobState
+  init: actions.intializeApplicationState
 };
 
 export default connect(null, mapDispatchToProps)(ViewJobs);

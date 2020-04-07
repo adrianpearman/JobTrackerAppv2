@@ -33,7 +33,11 @@ const SingleUpload = ({ onInputHandler, onSubmitHandler, push }) => {
             className="form-control"
             id="applicationPlatform"
             onChange={e => onInputHandler(e)}
+            defaultValue={"default"}
           >
+            <option value="default" disabled>
+              Select the Platform
+            </option>
             <option value="angel">Angel List</option>
             <option value="glassdoor">Glassdoor</option>
             <option value="indeed">Indeed</option>
@@ -48,19 +52,23 @@ const SingleUpload = ({ onInputHandler, onSubmitHandler, push }) => {
             className="form-control"
             id="applicationMonth"
             onChange={e => onInputHandler(e)}
+            defaultValue={"default"}
           >
-            <option value="0">January</option>
-            <option value="1">February</option>
-            <option value="2">March</option>
-            <option value="3">April</option>
-            <option value="4">May</option>
-            <option value="5">June</option>
-            <option value="6">July</option>
-            <option value="7">August</option>
-            <option value="8">September</option>
-            <option value="9">October</option>
-            <option value="10">November</option>
-            <option value="11">December</option>
+            <option value="default" disabled>
+              Select the Month
+            </option>
+            <option value="1">January</option>
+            <option value="2">February</option>
+            <option value="3">March</option>
+            <option value="4">April</option>
+            <option value="5">May</option>
+            <option value="6">June</option>
+            <option value="7">July</option>
+            <option value="8">August</option>
+            <option value="9">September</option>
+            <option value="10">October</option>
+            <option value="11">November</option>
+            <option value="12">December</option>
           </select>
         </div>
 
@@ -71,6 +79,7 @@ const SingleUpload = ({ onInputHandler, onSubmitHandler, push }) => {
             type="number"
             min="2017"
             id="applicationYear"
+            placeholder="2017"
             onChange={e => onInputHandler(e)}
           />
         </div>
@@ -81,7 +90,11 @@ const SingleUpload = ({ onInputHandler, onSubmitHandler, push }) => {
             className="form-control"
             id="response"
             onChange={e => onInputHandler(e)}
+            defaultValue={"default"}
           >
+            <option value="default" disabled>
+              Select a status
+            </option>
             <option value="0">Not Viewed</option>
             <option value="1">Representative Reached Out</option>
             <option value="2">Application Declined </option>
@@ -95,81 +108,19 @@ const SingleUpload = ({ onInputHandler, onSubmitHandler, push }) => {
             className="form-control"
             id="interview"
             onChange={e => onInputHandler(e)}
+            defaultValue={"default"}
           >
+            <option value="default" disabled>
+              Select an option
+            </option>
             <option value="false">No</option>
             <option value="true">Yes</option>
           </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="hired">Hired?</label>
-          <select
-            className="form-control"
-            id="hired"
-            onChange={e => onInputHandler(e)}
-          >
-            <option value="false">No</option>
-            <option value="true">Yes</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="hiredDateMonth">Hired Month</label>
-          <select
-            className="form-control"
-            id="hiredDateMonth"
-            onChange={e => onInputHandler(e)}
-          >
-            <option value="0">January</option>
-            <option value="1">February</option>
-            <option value="2">March</option>
-            <option value="3">April</option>
-            <option value="4">May</option>
-            <option value="5">June</option>
-            <option value="6">July</option>
-            <option value="7">August</option>
-            <option value="8">September</option>
-            <option value="9">October</option>
-            <option value="10">November</option>
-            <option value="11">December</option>
-          </select>
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="hiredDateYear">Hired Year</label>
-          <input
-            className="form-control"
-            type="number"
-            min="2017"
-            id="hiredDateYear"
-            onChange={e => onInputHandler(e)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="lastDayWorkedMonth">Last Day Worked (Month)</label>
-          <input
-            className="form-control"
-            type="number"
-            id="lastDayWorkedMonth"
-            onChange={e => onInputHandler(e)}
-          />
-        </div>
-
-        <div className="form-group">
-          <label htmlFor="lastDayWorkedYear">Last Day Worked (Year)</label>
-          <input
-            className="form-control"
-            type="number"
-            min="2017"
-            id="lastDayWorkedYear"
-            onChange={e => onInputHandler(e)}
-          />
         </div>
 
         <button
           className="btn btn-primary btn-lg btn-block"
-          onClick={e => onSubmitHandler(null, push)}
+          onClick={e => onSubmitHandler(null)}
         >
           Submit Application
         </button>

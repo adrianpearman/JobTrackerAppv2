@@ -2,9 +2,9 @@
 import React from "react";
 // Redux
 import { Router, Route, Switch } from "react-router-dom";
-import { Provider } from "react-redux";
-// Redux Store
-import store from "../redux/store";
+// Root Component
+import Root from "../utils/Root";
+// Browser History
 import history from "../utils/history";
 // Components
 import PrivateRoute from "../utils/PrivateRoute";
@@ -20,7 +20,7 @@ import AdminContent from "./Admin/AdminContent";
 
 const App = () => {
   return (
-    <Provider store={store}>
+    <Root>
       <Router history={history}>
         <Header />
         <Switch>
@@ -41,7 +41,7 @@ const App = () => {
           <Route path="/*" component={ErrorPage} />
         </Switch>
       </Router>
-    </Provider>
+    </Root>
   );
 };
 

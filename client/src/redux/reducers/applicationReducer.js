@@ -7,7 +7,8 @@ const initialState = {
   applicationsPerMonth: [],
   applicationsTotalNumber: 0,
   currentMonthApplications: [],
-  singleApplication: {}
+  singleApplication: {},
+  deletedApplication: {}
 };
 
 export const applicationReducer = (state = initialState, action) => {
@@ -31,6 +32,13 @@ export const applicationReducer = (state = initialState, action) => {
       };
     }
     case ACTIONS.RETRIEVE_JOBS_LIST: {
+      const { applications: applicationList } = action.payload.data;
+      return {
+        ...state,
+        applicationList
+      };
+    }
+    case ACTIONS.UPDATE_APPLICATION_TIME_FRAME: {
       const { applications: applicationList } = action.payload.data;
       return {
         ...state,
@@ -68,9 +76,10 @@ export const applicationReducer = (state = initialState, action) => {
         ...state
       };
     }
-    case ACTIONS.DELETE_JOB: {
+    case ACTIONS.DELETE_APPLICATION: {
       return {
-        ...state
+        ...state,
+        deletedApplication: { ...action.payload }
       };
     }
     default: {

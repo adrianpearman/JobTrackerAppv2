@@ -5,15 +5,11 @@ const initialState = {
     companyName: "",
     applicationLink: "",
     applicationPlatform: "",
-    applicationMonth: "",
-    applicationYear: "",
+    applicationMonth: 0,
+    applicationYear: 0,
     response: false,
     interview: false,
     hired: false,
-    hiredDateMonth: "",
-    hiredDateYear: "",
-    lastDayWorkedMonth: "",
-    lastDayWorkedYear: "",
     applicationSubmitSuccess: "",
     applicationSubmitError: ""
   },
@@ -25,16 +21,17 @@ const initialState = {
     errorMsg: ""
   },
   recruiterForm: {
+    recruiterMessage: "",
+    recruiterPlatform: "",
     recruiterName: "",
-    recruiterDate: "",
+    recruiterRole: "",
     recruiterMonth: "",
     recruiterYear: "",
-    recruiterPlatform: "",
-    recruiterRole: "",
-    recruiterLeadToRole: "",
-    recruiterLeadToInterview: "",
-    recruiterHiringInternal: "",
-    recruiterCompany: ""
+    recruiterCompany: "",
+    recruiterLeadToInterview: false,
+    recruiterLeadToRole: false,
+    recruiterHiringInternal: false,
+    recruiterHiringContract: false
   },
   recruiterSubmit: {
     success: null,
@@ -65,7 +62,7 @@ export const formReducer = (state = initialState, action) => {
         }
       };
     }
-    case ACTIONS.ADD_NEW_JOB: {
+    case ACTIONS.ADD_NEW_APPLICATION: {
       return {
         ...state,
         applicationSubmit: {
@@ -79,7 +76,7 @@ export const formReducer = (state = initialState, action) => {
       };
     }
 
-    case ACTIONS.ADD_NEW_JOB_ERROR: {
+    case ACTIONS.ADD_NEW_APPLICATION_ERROR: {
       let errors = action.payload.errMsg
         ? action.payload.errMsg.errors
         : {
