@@ -68,6 +68,6 @@ const ApplicationSchema = new Schema({
   }
 });
 
-let Applications = mongoose.model("Applications", ApplicationSchema);
+const Applications = mongoose.model("Applications", ApplicationSchema);
 
 module.exports = Applications;

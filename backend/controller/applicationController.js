@@ -1,8 +1,12 @@
-const Applications = require("../models/applicationModel.js");
+// Models
+const Applications = require("../models/applicationModel");
+const Company = require("../models/companyModel");
 const User = require("../models/userModel");
-const unixTime = require("../utils/unixTime");
+// Util Functions
 const countEntryStatus = require("../utils/countEntryStatus");
 const countMonthlyEntries = require("../utils/countMonthlyEntries");
+const unixTime = require("../utils/unixTime");
+const updatedCompanyContainer = require("../utils/updateCompanyContainer");
 
 // setting the object to be saved in the database
 let newJobObject = ({
@@ -143,13 +147,28 @@ const applicationController = {
 
     try {
       let applications = await Applications.find({ companyName: companyName });
-      res.send({ applications });
+      let applicationResponses = countEntryStatus(applications, false);
+      let applicationsPerMonth = countMonthlyEntries(applications, false);
+      let data = {
+        applications,
+        applicationResponses,
+        applicationsPerMonth
+      };
+      res.send(data);
+    } catch (err) {
+      res.status(500).send(err);
+    }
+  },
+  getCompanyList: async (req, res) => {
+    try {
+      let Companies = await Company.findOne({});
+      res.send(Companies);
     } catch (err) {
       res.status(500).send(err);
     }
   },
   addApplication: async (req, res) => {
-    const { userId, applicationLink } = req.body;
+    const { applicationLink, companyName, userId } = req.body;
 
     // validating whether a userId is present
     let user = await User.findOne({ _id: userId });
@@ -172,6 +191,8 @@ const applicationController = {
     try {
       let newApplicationContent = new Applications(newJobObject(req.body));
       let newApplication = await newApplicationContent.save();
+      // update the company container object
+      await updatedCompanyContainer.add(companyName);
       res.send(newApplication);
     } catch (err) {
       res.status(500).send({
@@ -221,6 +242,7 @@ const applicationController = {
 
     try {
       const job = await Applications.deleteOne({ _id: jobId });
+      await updatedCompanyContainer.delete(companyName);
       res.send({
         ...job,
         jobId

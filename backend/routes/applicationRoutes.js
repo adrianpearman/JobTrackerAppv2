@@ -44,6 +44,14 @@ router.get(
   "/api/data/application/timeframe",
   applicationController.getApplicationsPerTimeFrame
 );
+router.get(
+  "/api/data/application/companies",
+  applicationController.getCompanyList
+);
+router.get(
+  "/api/data/application/companies/company",
+  applicationController.getApplicationsFromCompany
+);
 
 //POST REQUESTS
 // add a single application
