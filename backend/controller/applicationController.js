@@ -1,258 +1,165 @@
 // Models
-const Applications = require("../models/applicationModel");
-const Company = require("../models/companyModel");
-const User = require("../models/userModel");
-// Util Functions
-const countEntryStatus = require("../utils/countEntryStatus");
-const countMonthlyEntries = require("../utils/countMonthlyEntries");
-const unixTime = require("../utils/unixTime");
-const updatedCompanyContainer = require("../utils/updateCompanyContainer");
-
-// setting the object to be saved in the database
-let newJobObject = ({
-  companyName,
-  applicationLink,
-  applicationPlatform,
-  applicationMonth,
-  applicationYear,
-  interview,
-  response,
-  userId
-}) => {
-  return {
-    companyName: companyName,
-    applicationLink: applicationLink,
-    applicationPlatform: applicationPlatform,
-    applicationMonth: parseInt(applicationMonth),
-    applicationYear: parseInt(applicationYear),
-    applicationDate: unixTime(applicationMonth, applicationYear),
-    interview: interview,
-    response: response,
-    userId: userId
-  };
-};
+const applicationModel = require("../models/applicationModel");
 
 const applicationController = {
-  getInitApplications: async (req, res) => {
-    try {
-      //All applicants
-      let applications = await Applications.find({});
-      // Number of applications
-      let applicationsTotalNumber = applications.length;
-      // get last 10 applications
-      let applicationsLast10 = await Applications.find({})
-        .sort({ appliationDate: -1 })
-        .limit(10);
-
-      let applicationResponses = countEntryStatus(applications, false);
-      let applicationsPerMonth = countMonthlyEntries(applications, false);
-
-      // grab latest results for current month
-      let currentMonthApplications = await Applications.find({
-        applicationDate: unixTime(
-          new Date().getMonth() + 1,
-          new Date().getFullYear()
-        )
-      });
-
-      let data = {
-        applicationsTotalNumber,
-        applicationsLast10,
-        applicationResponses,
-        applicationsPerMonth,
-        currentMonthApplications
-      };
-      return res.send(data);
-    } catch (err) {
-      return res
-        .status(500)
-        .send({ err, errMsg: "Unable to process the request" });
-    }
-  },
+  // GET REQUESTS
   getAllApplications: async (req, res) => {
     try {
-      let applications = await Applications.find({});
-      res.send({ applications });
-    } catch (err) {
-      res.status(500).send({ errMsg: err });
-    }
-  },
-  getApplicationsPagination: async (req, res) => {
-    const { startingPoint, amountOfRecords } = req.body;
+      const { userID } = req.query;
+      const applications = await applicationModel
+        .find({})
+        .where("userID")
+        .equals(userID);
 
-    try {
-      let applications = await Applications.find({})
-        .skip(startingPoint)
-        .limit(amountOfRecords);
-      res.send({ applications });
+      res.send({ data: applications });
     } catch (err) {
-      res.status(50).send({ errMsg: err });
-    }
-  },
-  getSingleApplication: async (req, res) => {
-    const { jobId } = req.query;
-
-    let application = await Applications.findById(jobId);
-    //Validate whether job exists
-    if (!application) {
-      return res.status(500).send({
-        message: "no application found"
+      res.status(400).send({
+        error: "Unable to perform this request",
       });
     }
-
-    try {
-      res.send({ application });
-    } catch (err) {
-      res.status(500).send({ errMsg: err });
-    }
   },
-  getApplicationsPerMonth: async (req, res) => {
-    const { month } = req.query;
+  getIndividualApplication: async (req, res) => {
+    const { id, userID } = req.query;
 
     try {
-      let applications = await Applications.find({ applicationMonth: month });
-      res.send({ applications });
-    } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getApplicationsPerYear: async (req, res) => {
-    const { year } = req.query;
-
-    try {
-      let applications = await Applications.find({ applicationYear: year });
-      res.send({ applications });
-    } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getApplicationsPerTimeFrame: async (req, res) => {
-    const { unixTime, timeFrame } = req.query;
-
-    try {
-      let applications;
-      if (timeFrame === "all time") {
-        applications = await Applications.find({});
-        return res.send({ applications });
+      const data = await applicationModel.findById(id);
+      if (data.userID === userID) {
+        res.send({ data: data });
+      } else if (data === null) {
+        throw error;
       } else {
-        applications = await Applications.find({ applicationDate: unixTime });
-        return res.send({ applications });
+        res.status(400).send({ error: `Unauthorized to access application` });
       }
     } catch (err) {
-      res.status(500).send({ errMsg: err });
+      res.status(400).send({ error: `Nothing found with the id of ${id}` });
     }
   },
-  getApplicationsFromCompany: async (req, res) => {
+  getApplicationsByCompany: async (req, res) => {
     const { companyName } = req.query;
 
     try {
-      let applications = await Applications.find({ companyName: companyName });
-      let applicationResponses = countEntryStatus(applications, false);
-      let applicationsPerMonth = countMonthlyEntries(applications, false);
-      let data = {
-        applications,
-        applicationResponses,
-        applicationsPerMonth
+      const applications = await applicationModel
+        .find({})
+        .where("companyName")
+        .equals(companyName);
+      // Sending information
+      res.send({ data: applications });
+    } catch (err) {
+      res.status(400).send({ error: `Unable to find company: ${companyName}` });
+    }
+  },
+  getApplicationsByPlatform: async (req, res) => {
+    const { platform } = req.query;
+
+    try {
+      const applications = await applicationModel
+        .find({})
+        .where("platform")
+        .equals(platform);
+
+      res.send({ data: applications });
+    } catch (err) {
+      res.status(400).send({
+        error: `Unable to find applications from platform: ${platform}`,
+      });
+    }
+  },
+  getApplicationAnalytics: async (req, res) => {
+    // console.log(req.query);
+    try {
+      const data = await applicationModel.find({});
+      res.send({
+        data: data,
+      });
+    } catch (err) {
+      res.status(400).send({ error: "Unable to perform this request" });
+    }
+    // average days between response
+    // applications per day
+    // total applications w/ out company names, links
+    // responses
+  },
+  // POST REQUESTS
+  addNewApplication: async (req, res) => {
+    const {
+      companyName,
+      day,
+      decision,
+      interview,
+      interviewDate,
+      link,
+      month,
+      response,
+      responseDate,
+      sourceSite,
+      userID,
+      year,
+    } = req.body;
+
+    try {
+      const formattedDate = new Date(`${year}-${month}-${day}`);
+      const applicationObj = {
+        applicationDate: formattedDate,
+        companyName,
+        decision,
+        interview,
+        interviewDate,
+        link,
+        response,
+        responseDate,
+        sourceSite,
+        userID,
       };
-      res.send(data);
+      const newApplication = await applicationModel.create(applicationObj);
+      res.send({ data: newApplication });
     } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  getCompanyList: async (req, res) => {
-    try {
-      let Companies = await Company.findOne({});
-      res.send(Companies);
-    } catch (err) {
-      res.status(500).send(err);
-    }
-  },
-  addApplication: async (req, res) => {
-    const { applicationLink, companyName, userId } = req.body;
+      const errorInformation = [];
+      const errorData = Object.keys(err.errors);
 
-    // validating whether a userId is present
-    let user = await User.findOne({ _id: userId });
-
-    if (!user) {
-      return res
-        .status(500)
-        .send({ message: "Please resubmit with a valid UserID" });
-    }
-
-    //validating whether Job has been posted already
-    let job = await Applications.findOne({ applicationLink });
-
-    if (job) {
-      return res.status(500).send({
-        message: "Unable to add to Database, Application already in System"
+      errorData.forEach((e) => {
+        errorInformation.push(err.errors[e].message);
       });
-    }
 
-    try {
-      let newApplicationContent = new Applications(newJobObject(req.body));
-      let newApplication = await newApplicationContent.save();
-      // update the company container object
-      await updatedCompanyContainer.add(companyName);
-      res.send(newApplication);
-    } catch (err) {
-      res.status(500).send({
-        message: "Error occured: Unable to create application",
-        errMsg: err
-      });
+      res.status(400).send({ error: errorInformation });
     }
   },
-  bulkAddApllication: (req, res) => {
-    // Value submitted from the client
-    let data = req.body.data;
-    res.send(data);
-  },
+  bulkAddApplications: async (req, res) => {},
+  // PUT REQUESTS
   updateApplication: async (req, res) => {
-    const { userId, jobId } = req.body;
-    const updatedContent = req.body;
-
-    let user = await User.findById(userId);
-
-    if (!user) {
-      return res.status(500).send({
-        message: "Please resubmit with a valid UserID",
-        errMsg: err
-      });
-    }
-
+    const id = req.body._id;
     try {
-      await Applications.updateOne({ _id: jobId }, updatedContent);
-      res.send({
-        message: `Successfully updated Jo ID: ${jobId}`,
-        updated: updatedContent
-      });
+      const updatedApplication = await applicationModel.findOneAndUpdate(
+        { _id: id },
+        { ...req.body }
+      );
+      res.send({ data: updatedApplication });
     } catch (err) {
-      res.status(500).send({
-        message: "Error occured: Unable to find application",
-        errMsg: err
-      });
+      console.log(err);
+      res
+        .status(400)
+        .send({ error: `An error occured while trying to update id: ${id}` });
     }
   },
+  // DELETE REQUESTS
   deleteApplication: async (req, res) => {
-    const { userId, jobId } = req.query;
-    const user = await User.find({ _id: userId });
-
-    if (!user) {
-      return res.status(500).send({ errMsg: err });
-    }
+    const { id, userID } = req.body;
 
     try {
-      const job = await Applications.deleteOne({ _id: jobId });
-      await updatedCompanyContainer.delete(companyName);
-      res.send({
-        ...job,
-        jobId
-      });
+      const application = await applicationModel.findById(id);
+      if (application.userID === userID) {
+        const deletedApplication = await applicationModel.deleteOne({
+          _id: id,
+        });
+        res.send({ data: deletedApplication });
+      } else {
+        res
+          .status(400)
+          .send({ error: `Unauthorized to delete application id: ${id}` });
+      }
     } catch (err) {
-      res.json({
-        errMsg: err
-      });
+      res.status(400).send({ error: `Unable to delete application id: ${id}` });
     }
-  }
+  },
 };
 
 module.exports = applicationController;
