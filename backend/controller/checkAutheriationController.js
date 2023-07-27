@@ -1,10 +1,10 @@
-const admin = require("../firebase/firebaseAdmin");
+const { firebaseAdminAuth } = require("../utils");
 
 const checkAutheriationController = {
   checkAutherized: async (req, res, next) => {
     if (req.headers.authtoken) {
       try {
-        await admin.auth().verifyIdToken(req.headers.authtoken);
+        await firebaseAdminAuth.auth().verifyIdToken(req.headers.authtoken);
         next();
       } catch (err) {
         res.status(403).send({

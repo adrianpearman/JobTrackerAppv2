@@ -2,24 +2,23 @@
 const express = require("express");
 const router = express.Router({ mergeParams: true });
 // Controller
-const applicationController = require("../controller/applicationController");
+const {
+  addNewApplication,
+  deleteApplication,
+  getAllApplications,
+  getIndividualApplication,
+  updateApplication,
+} = require("../controller/applicationController");
 // Routes
 // GET
-router.get("/api/analytics", applicationController.getApplicationAnalytics);
-router.get("/api/application", applicationController.getAllApplications);
-router.get(
-  "/api/application/id",
-  applicationController.getIndividualApplication
-);
-router.get(
-  "/api/application/company",
-  applicationController.getApplicationsByCompany
-);
+// router.get("/api/analytics", appController.getApplicationAnalytics);
+router.get("/api/application", getAllApplications);
+router.get("/api/application/id", getIndividualApplication);
 // POST
-router.post("/api/application", applicationController.addNewApplication);
+router.post("/api/application", addNewApplication);
 // PUT
-router.put("/api/application/id", applicationController.updateApplication);
+// router.put("/api/application/id", updateApplication);
 // DELETE
-router.delete("/api/application/id", applicationController.deleteApplication);
+// router.delete("/api/application/id", deleteApplication);
 
 module.exports = router;
