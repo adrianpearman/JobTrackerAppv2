@@ -6,14 +6,15 @@ const {
   addNewApplication,
   deleteApplication,
   getAllApplications,
+  getApplicationAnalytics,
   getIndividualApplication,
   updateApplication,
 } = require("../controller/applicationController");
 // Routes
 // GET
-// router.get("/api/analytics", appController.getApplicationAnalytics);
-router.get("/api/application", getAllApplications);
-router.get("/api/application/id", getIndividualApplication);
+router.get("/api/analytics", getApplicationAnalytics);
+router.get("/api/applications", getAllApplications);
+router.get("/api/application", getIndividualApplication);
 // POST
 router.post("/api/application", addNewApplication);
 // PUT
