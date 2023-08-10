@@ -1,5 +1,12 @@
 const path = require("path");
 
 module.exports = {
-  config: path.resolve(__dirname, "backend", "config", "config.js"),
+  config: path.resolve(
+    __dirname,
+    "backend",
+    "databases",
+    "sql",
+    "config",
+    "config.js"
+  ),
 };
