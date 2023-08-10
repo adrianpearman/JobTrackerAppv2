@@ -119,9 +119,7 @@ module.exports = {
         },
       });
 
-      const applications = user.applications.map((a) => {
-        return a.dataValues;
-      });
+      const applications = user.applications.map((a) => a.dataValues);
 
       console.log(applications);
 
@@ -186,10 +184,7 @@ module.exports = {
   },
   mongooseConnection: async () => {
     try {
-      await mongoose.connect(
-        "mongodb://mongo:Rv1adR8nJgQZtlMHGIF4@containers-us-west-146.railway.app:6201",
-        { useNewUrlParser: true }
-      );
+      await mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true });
       console.log("Connected to Mongo Database");
     } catch (err) {
       console.error(err);
