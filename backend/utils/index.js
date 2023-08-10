@@ -1,12 +1,23 @@
 // NPM Modules
 const Sequelize = require("sequelize");
 const admin = require("firebase-admin");
+const mongoose = require("mongoose");
+// Config
 const { database, username, password, dialect, host, port } =
-  require("../config/config")[process.env.NODE_ENV];
+  require("../databases/sql/config/config")[process.env.NODE_ENV];
 // Models
-const { Company } = require("../models");
+// SQL
+const {
+  Application,
+  Company,
+  Platform,
+  User,
+} = require("../databases/sql/models");
+// Mongo
+const AnalyticsModel = require("../databases/mongo/models/analytic");
 
 module.exports = {
+  // GENERAL UTIL FUNCTIONS
   doesCompanyExist: async (name) => {
     const company = await Company.findOne({
       where: {
@@ -26,6 +37,129 @@ module.exports = {
       };
     }
   },
+  // ANALYTICS UTIL FUNCTIONS
+  applicationAnalytics: async (userUuid) => {
+    try {
+      const user = await User.findOne({ where: { uuid: userUuid } });
+      const { analyticsUuid } = user.dataValues;
+
+      const userAnalytics = await AnalyticsModel.findOne({
+        _id: analyticsUuid,
+      });
+
+      return {
+        success: true,
+        analytics: userAnalytics,
+        msg: "",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        analytics: null,
+        msg: error.message || "An issue occured retrieving analytics",
+      };
+    }
+  },
+  createUserApplicationAnalytics: async () => {
+    try {
+      const applicationsPerPlatform = {};
+      const interviewsPerPlatform = {};
+      const responsesPerPlatform = {};
+      let totalApplicationsWithInterview = 0;
+      let totalApplicationsWithResponse = 0;
+
+      const platforms = await Platform.findAll({
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
+
+      platforms.forEach((p) => {
+        const { platformName } = p.dataValues;
+        applicationsPerPlatform[platformName] = 0;
+        interviewsPerPlatform[platformName] = 0;
+        responsesPerPlatform[platformName] = 0;
+      });
+
+      const analytics = {
+        applicationsPerPlatform,
+        applicationsWithResponses: [],
+        interviewsPerPlatform,
+        responsesPerPlatform,
+        totalApplications: 0,
+        totalApplicationsWithInterview,
+        totalApplicationsWithResponse,
+      };
+
+      const analyticObj = new AnalyticsModel(analytics);
+      const newUserAnalyticObj = await analyticObj.save();
+
+      return {
+        success: true,
+        analytics: newUserAnalyticObj,
+        msg: "",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        analytics: null,
+        msg: error.message || "damn",
+      };
+    }
+  },
+  updateUserApplicationAnalytics: async (userUuid) => {
+    try {
+      const user = await User.findOne({
+        where: {
+          uuid: userUuid,
+        },
+        include: {
+          as: "applications",
+          model: Application,
+        },
+      });
+
+      const applications = user.applications.map((a) => {
+        return a.dataValues;
+      });
+
+      console.log(applications);
+
+      return {
+        success: false,
+        analytics: {},
+        msg: "",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        analytics: {},
+        msg: "",
+      };
+    }
+  },
+  deleteUserApplicationAnalytics: async (uuid) => {
+    try {
+      const analytics = await AnalyticsModel.deleteOne({ _id: uuid });
+
+      if (analytics.deletedCount === 0) {
+        throw new Error(`No Analytics matching UUID: ${uuid}`);
+      }
+
+      return {
+        success: true,
+        analyticsUuid: uuid,
+        msg: `Successdfully deleted UUID:${uuid}`,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        analyticsUuid: null,
+        msg: error.message || "",
+      };
+    }
+  },
+  // DATABASE AND AUTH FUNCTIONS
   firebaseAdminAuth: () => {
     const firebaseAdminConfig = {
       type: process.env.type,
@@ -49,6 +183,17 @@ module.exports = {
     });
 
     return admin;
+  },
+  mongooseConnection: async () => {
+    try {
+      await mongoose.connect(
+        "mongodb://mongo:Rv1adR8nJgQZtlMHGIF4@containers-us-west-146.railway.app:6201",
+        { useNewUrlParser: true }
+      );
+      console.log("Connected to Mongo Database");
+    } catch (err) {
+      console.error(err);
+    }
   },
   sequelizeConnection: () => {
     const sequelize = new Sequelize(database, username, password, {
