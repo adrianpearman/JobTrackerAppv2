@@ -1,45 +1,34 @@
-// NPM modules
-const express = require("express");
-const bodyParser = require("body-parser");
+// NPM Modules
+require("dotenv").config();
+const cookieParser = require("cookie-parser");
 const cors = require("cors");
-
-// Variables
-const app = express();
+const express = require("express");
+// Server Variables
 const PORT = process.env.PORT || 3001;
-const mongoConnection = require("./middlewares/mongoConnection");
-
-// Routes
-const applicationRoutes = require("./routes/applicationRoutes.js");
-const recruiterRoutes = require("./routes/recruiterRoutes");
-const userRoutes = require("./routes/userRoutes.js");
-
-// This is the rendered build index.html from the client build folder
-const clientRoot = require("path").join(__dirname, "../client", "build");
-
-// Middleware
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+const app = express();
+const { mongooseConnection, sequelizeConnection } = require("./utils");
+// Middlewares
 app.use(cors());
-
-// Connecting to Database
-mongoConnection();
-
-// Setting Routes For Backend
-app.use(applicationRoutes);
-app.use(recruiterRoutes);
-app.use(userRoutes);
-
-// Render client root buildfile if the application is ona production server
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static(clientRoot));
-  app.get("/", (req, res) => {
-    res.sendFile("index.html", { clientRoot });
-  });
-}
-
-app.listen(PORT, err => {
-  if (err) {
-    console.error(err);
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+// Routes
+app.use(require("./routes/applicationRoutes"));
+app.use(require("./routes/checkAuthorizationRoutes"));
+app.use(require("./routes/companyRoutes"));
+app.use(require("./routes/platformRoutes"));
+app.use(require("./routes/userRoutes"));
+// Init
+app.listen(PORT, async (err) => {
+  try {
+    if (err) {
+      throw new Error(err);
+    }
+    console.log(`Running on PORT:${PORT}`);
+    await sequelizeConnection().authenticate();
+    console.log("Connected to PostgreSQL DB");
+    await mongooseConnection();
+  } catch (error) {
+    console.log(error);
   }
-  console.log(`Running on PORT: ${PORT}`);
 });
