@@ -170,8 +170,7 @@ const applicationController = {
         userId: user.dataValues.id,
       });
 
-      const updatedAnalytics = await updateUserApplicationAnalytics(userUuid);
-      console.log(updatedAnalytics);
+      await updateUserApplicationAnalytics(userUuid);
 
       res.send({
         application: newApplication,
@@ -203,24 +202,83 @@ const applicationController = {
   //       .send({ error: `An error occured while trying to update id: ${id}` });
   //   }
   // },
-  // deleteApplication: async (req, res) => {
-  //   const { id, userID } = req.body;
-  //   try {
-  //     const application = await applicationModel.findById(id);
-  //     if (application.userID === userID) {
-  //       const deletedApplication = await applicationModel.deleteOne({
-  //         _id: id,
-  //       });
-  //       res.send({ data: deletedApplication });
-  //     } else {
-  //       res
-  //         .status(400)
-  //         .send({ error: `Unauthorized to delete application id: ${id}` });
-  //     }
-  //   } catch (err) {
-  //     res.status(400).send({ error: `Unable to delete application id: ${id}` });
-  //   }
-  // },
+  deleteApplication: async (req, res) => {
+    // Destructuring the req body
+    const { applicationUuid, userUuid } = req.body;
+
+    try {
+      // Throwing error if no application uuid
+      if (!applicationUuid) {
+        throw new Error("Missing Application");
+      }
+      // Throwing error if no user uuid
+      if (!userUuid) {
+        throw new Error("Missing User UUID");
+      }
+      // Getting the user and application through association
+      const user = await User.findOne({
+        where: { uuid: userUuid },
+        include: {
+          model: Application,
+          as: "applications",
+          where: {
+            uuid: applicationUuid,
+          },
+        },
+      });
+      // Throwing error if no valid user
+      if (user === null) {
+        throw new Error(`Unable to find user:${userUuid}`);
+      }
+      // Retrieving the uuid. primarily to ensure that it belongs to the user
+      const { dataValues: app } = user.dataValues.applications[0];
+      // Throwing an error if the app does not exist
+      if (app.uuid === null) {
+        throw new Error(`Unable to find application:${applicationUuid}`);
+      }
+      // Deleteing the application
+      const deletedApplication = await Application.destroy({
+        where: {
+          uuid: applicationUuid,
+        },
+      });
+      // Throw error if unable to delete the application
+      if (deletedApplication !== 1) {
+        throw new Error(`Unable to delete application:${applicationUuid}`);
+      }
+      // Updating the user analytics
+      await updateUserApplicationAnalytics(userUuid);
+
+      res.send({
+        application: app,
+        msg: `Successfully deleted application:${applicationUuid}`,
+        success: true,
+      });
+    } catch (error) {
+      res.status(400).send({
+        success: false,
+        msg: error.message || "An error has occured",
+        application: null,
+      });
+    }
+
+    // const { id, userID } = req.body;
+    // try {
+    //   const application = await applicationModel.findById(id);
+    //   if (application.userID === userID) {
+    //     const deletedApplication = await applicationModel.deleteOne({
+    //       _id: id,
+    //     });
+    //     res.send({ data: deletedApplication });
+    //   } else {
+    //     res
+    //       .status(400)
+    //       .send({ error: `Unauthorized to delete application id: ${id}` });
+    //   }
+    // } catch (err) {
+    //   res.status(400).send({ error: `Unable to delete application id: ${id}` });
+    // }
+  },
 };
 
 module.exports = applicationController;

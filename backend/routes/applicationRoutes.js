@@ -20,6 +20,6 @@ router.post("/api/application", addNewApplication);
 // PUT
 // router.put("/api/application/id", updateApplication);
 // DELETE
-// router.delete("/api/application/id", deleteApplication);
+router.delete("/api/application", deleteApplication);
 
 module.exports = router;
