@@ -1,30 +1,51 @@
 //
-const { doesCompanyExist } = require("../utils");
+const {
+  applicationAnalytics,
+  doesCompanyExist,
+  updateUserApplicationAnalytics,
+} = require("../utils");
 
 // Models
-const { Application, Company, User } = require("../models");
+const { Application, Company, User } = require("../databases/sql/models");
+const AnalyticsModel = require("../databases/mongo/models/analytic");
 
 const applicationController = {
   getAllApplications: async (req, res) => {
-    const { userUuid } = req.query;
+    const { userUuid, isPrivate = "true" } = req.query;
 
     try {
       if (!userUuid) {
         throw new Error("Missing User ID");
       }
+
       const user = await User.findOne({ where: { uuid: userUuid } });
 
       const applications = await Application.findAll({
+        attributes: {
+          exclude:
+            isPrivate === "true"
+              ? ["companyId", "createdAt", "link", "updatedAt", "userId"]
+              : [],
+        },
         where: { userId: user.dataValues.id },
       });
 
+      const userAnalytics = await applicationAnalytics(userUuid);
+      const { analytics, msg, success } = userAnalytics;
+
+      if (!success) {
+        throw new Error(msg);
+      }
+
       res.send({
-        applications: applications,
+        analytics: analytics,
+        applications,
         message: "Successfully returned all applications",
         success: true,
       });
     } catch (error) {
       res.status(400).send({
+        analytics: null,
         applications: null,
         message: error.message || "Unable to perform this request",
         success: false,
@@ -66,22 +87,39 @@ const applicationController = {
       });
     }
   },
+  getApplicationAnalytics: async (req, res) => {
+    const { userUuid } = req.query;
 
-  // getApplicationAnalytics: async (req, res) => {
-  //   // console.log(req.query);
-  //   try {
-  //     const data = await applicationModel.find({});
-  //     res.send({
-  //       data: data,
-  //     });
-  //   } catch (err) {
-  //     res.status(400).send({ error: "Unable to perform this request" });
-  //   }
-  //   // average days between response
-  //   // applications per day
-  //   // total applications w/ out company names, links
-  //   // responses
-  // },
+    try {
+      if (!userUuid) {
+        throw new Error("User UUID is missing");
+      }
+
+      const user = await User.findOne({
+        where: { uuid: userUuid },
+      });
+
+      const userAnalytics = await AnalyticsModel.findOne(
+        {
+          _id: user.dataValues.analyticsUuid,
+        },
+        // this omits the id from the returned values
+        { _id: 0 }
+      );
+
+      res.send({
+        success: true,
+        userAnalytics: userAnalytics,
+        msg: "Successfully returned user analytics",
+      });
+    } catch (error) {
+      res.status(400).send({
+        success: false,
+        userAnalytics: {},
+        msg: error.message || "Unable to retrieve analytics",
+      });
+    }
+  },
   addNewApplication: async (req, res) => {
     const date = new Date();
     const {
@@ -131,6 +169,9 @@ const applicationController = {
         sourceSite: sourceSite,
         userId: user.dataValues.id,
       });
+
+      const updatedAnalytics = await updateUserApplicationAnalytics(userUuid);
+      console.log(updatedAnalytics);
 
       res.send({
         application: newApplication,
