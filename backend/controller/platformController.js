@@ -1,11 +1,15 @@
 // NPM Modules
-const { Application, Platform } = require("../models");
+const { Application, Platform, User } = require("../databases/sql/models");
 
-//
 const platformController = {
   getPlatforms: async (req, res) => {
     try {
-      const platforms = await Platform.findAll();
+      //  Retrieving all the platforms
+      const platforms = await Platform.findAll({
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
 
       res.send({
         message: "Successfully retrieved platforms",
@@ -21,16 +25,19 @@ const platformController = {
     }
   },
   getIndividualPlatform: async (req, res) => {
+    // Destructuring the req query
     const { platformId } = req.query;
     try {
-      if (platformId === null || platformId === undefined) {
+      // Error handling if no platform provided
+      if (!platformId) {
         throw new Error("Missing platformId");
       }
-
-      console.log(platformId);
-
+      // Retruning the individual platform
       const platform = await Platform.findOne({
         where: { id: platformId },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
       });
 
       res.send({
@@ -47,24 +54,83 @@ const platformController = {
     }
   },
   getApplicationsByPlatform: async (req, res) => {
-    const { platformId } = req.query;
+    // Destructuring the req query
+    const { isPrivate = "false", platformId, userUuid } = req.query;
 
     try {
+      // Error handling if no platform provided
       if (!platformId) {
         throw new Error("Missing Platform ID");
       }
+      let platform;
 
-      const platform = await Platform.findOne({
-        where: { id: platformId },
-        include: {
-          as: "applications",
-          model: Application,
-        },
-      });
+      // Returning the platform and it's associatied applications
+      // For private request, it'll return all requests related to the user
+      if (isPrivate === "true") {
+        // Throwing an error if no user uuid is provided
+        if (!userUuid) {
+          throw new Error("User UUID missing");
+        }
+        // Getting the user information
+        const user = await User.findOne({
+          where: {
+            uuid: userUuid,
+          },
+        });
+        // Destructuring the user object
+        const { id } = user.dataValues;
+        // Retrieving the platform data
+        platform = await Platform.findOne({
+          where: { id: platformId },
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: {
+            as: "applications",
+            model: Application,
+            where: {
+              userId: id,
+            },
+            attributes: {
+              exclude: ["createdAt", "updatedAt"],
+            },
+          },
+        });
+      }
+      // For non private, it'll return all applications per platform but user data removed
+      else {
+        platform = await Platform.findOne({
+          where: { id: platformId },
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
+          include: {
+            as: "applications",
+            model: Application,
+            attributes: {
+              exclude: [
+                "applicationDate",
+                "createdAt",
+                "decision",
+                "id",
+                "interview",
+                "interviewDate",
+                "link",
+                "response",
+                "responseDate",
+                "updatedAt",
+                "userId",
+                "uuid",
+              ],
+            },
+          },
+        });
+      }
+      // Destructuring the platform object
+      const { platformName } = platform.dataValues;
 
       res.send({
-        applications: null,
-        message: "",
+        message: `Successfully returned applications for platform: ${platformName}`,
         platform: platform,
         success: true,
       });
@@ -78,12 +144,14 @@ const platformController = {
     }
   },
   createPlatform: async (req, res) => {
+    // Destructuring the request body
     const { platformName } = req.body;
     try {
+      // Error handling if no platform provided
       if (!platformName) {
         throw new Error("Missing platform name");
       }
-
+      // Creating the new platform
       const newPlatform = await Platform.create({
         platformName: platformName.toLowerCase(),
       });
