@@ -109,13 +109,13 @@ const createUserApplicationAnalytics = async () => {
     return {
       success: true,
       analytics: newUserAnalyticObj,
-      msg: "",
+      msg: "Successfully created user analytics",
     };
   } catch (error) {
     return {
       success: false,
       analytics: null,
-      msg: error.message || "damn",
+      msg: error.message || "Issue creating analytics, try again later",
     };
   }
 };
