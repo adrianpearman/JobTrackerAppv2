@@ -1,5 +1,5 @@
 // Models
-const { User } = require("../databases/sql/models");
+const { Application, User } = require("../databases/sql/models");
 // Util functions
 const {
   createUserApplicationAnalytics,
@@ -71,16 +71,25 @@ const userController = {
       if (user === null) {
         throw new Error(`Unable to find user:${userUuid}`);
       }
+      // Destructuring user obj
+      const { analyticsUuid, id } = user.dataValues;
       // Deleting the associated user analytics
       const deletedAnalytics = await deleteUserApplicationAnalytics(
-        user.dataValues.analyticsUuid
+        analyticsUuid
       );
+      // Destructuring useranalytics obj
       const { msg, success } = deletedAnalytics;
       // If an error occured when deleting user analytics
       if (success === false) {
         throw new Error(msg);
       }
-      // Deletfing the user
+      // Deleting all applications related to user
+      await Application.destroy({
+        where: {
+          userId: id,
+        },
+      });
+      // Deleting the user
       const deletedUser = await User.destroy({
         where: {
           uuid: userUuid,
