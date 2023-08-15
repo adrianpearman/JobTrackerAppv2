@@ -45,10 +45,6 @@ module.exports = {
         type: DataTypes.DATE,
         default: null,
       },
-      sourceSite: {
-        type: DataTypes.STRING,
-        allowFalse: false,
-      },
       companyId: {
         type: DataTypes.INTEGER,
         allowFalse: false,

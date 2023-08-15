@@ -47,10 +47,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.DATE,
         default: null,
       },
-      sourceSite: {
-        type: DataTypes.STRING,
-        allowFalse: false,
-      },
     },
     {
       sequelize,
