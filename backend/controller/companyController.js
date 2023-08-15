@@ -1,20 +1,27 @@
-// NPM Modules
-const { Application, Company } = require("../models");
+// Models
+const { Application, Company } = require("../databases/sql/models");
 
-//
 const companyController = {
   getApplicationsByCompany: async (req, res) => {
+    // Destructuring the request query
     const { companyUuid } = req.query;
     try {
+      // Throwing error if no company uuid
       if (!companyUuid || companyUuid === undefined) {
         throw new Error("Company ID is missing");
       }
-
+      // Retrieving the company and associated applications
       const company = await Company.findOne({
         where: { uuid: companyUuid },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
         include: {
           as: "applications",
           model: Application,
+          attributes: {
+            exclude: ["createdAt", "updatedAt"],
+          },
         },
       });
 
