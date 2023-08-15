@@ -42,10 +42,8 @@ const doesCompanyExist = async (name) => {
 };
 const daysBetweenApplications = (beginning, end) => {
   const secondInDay = 86400;
-  const beginningUnix = parseInt(
-    (new Date(beginning).getTime() / 1000).toFixed(0)
-  );
-  const endUnix = parseInt((new Date(end).getTime() / 1000).toFixed(0));
+  const beginningUnix = convertToUnixSec(beginning);
+  const endUnix = convertToUnixSec(end);
   return (endUnix - beginningUnix) / secondInDay;
 };
 // ANALYTICS UTIL FUNCTIONS
@@ -74,10 +72,9 @@ const applicationAnalytics = async (userUuid) => {
 const createUserApplicationAnalytics = async () => {
   try {
     const applicationsPerPlatform = {};
+    const averageResponsesTimePerPlatform = {};
     const interviewsPerPlatform = {};
     const responsesPerPlatform = {};
-    let totalApplicationsWithInterview = 0;
-    let totalApplicationsWithResponse = 0;
 
     const platforms = await Platform.findAll({
       attributes: {
@@ -88,19 +85,20 @@ const createUserApplicationAnalytics = async () => {
     platforms.forEach((p) => {
       const { platformName } = p.dataValues;
       applicationsPerPlatform[platformName] = 0;
+      averageResponsesTimePerPlatform[platformName] = 0;
       interviewsPerPlatform[platformName] = 0;
       responsesPerPlatform[platformName] = 0;
     });
 
     const analytics = {
       applicationsPerPlatform,
-      averageAmountOfDailyApplications,
+      averageAmountOfDailyApplications: 0,
       averageResponsesTimePerPlatform,
       interviewsPerPlatform,
       responsesPerPlatform,
       totalApplications: 0,
-      totalApplicationsWithInterview,
-      totalApplicationsWithResponse,
+      totalApplicationsWithInterview: 0,
+      totalApplicationsWithResponse: 0,
     };
 
     const analyticObj = new AnalyticsModel(analytics);
