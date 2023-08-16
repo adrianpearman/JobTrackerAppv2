@@ -141,7 +141,7 @@ const applicationController = {
     const date = new Date();
     const {
       companyName,
-      day = date.getDate(),
+      day = date.getDate(), // must be valid for the specified month
       decision = null,
       interview = null,
       interviewDate = null,
@@ -152,7 +152,7 @@ const applicationController = {
       responseDate = null,
       sourceSite,
       userUuid,
-      year = date.getFullYear(),
+      year = date.getFullYear(), // must be a valid year
     } = req.body;
     try {
       const formattedDate = new Date(year, month, day, 0, 0, 0);
