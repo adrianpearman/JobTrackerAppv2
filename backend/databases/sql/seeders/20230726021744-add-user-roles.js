@@ -1,7 +1,7 @@
 "use strict";
 
 /** @type {import('sequelize-cli').Migration} */
-const tableName = "users";
+const tableName = "roles";
 
 module.exports = {
   async up(queryInterface, Sequelize) {
@@ -9,11 +9,7 @@ module.exports = {
       tableName,
       [
         {
-          uuid: "0399eec1-ff9c-4c29-87b4-c3504da56ee1",
-          firstName: "billy",
-          lastName: "bean",
-          email: "test@test.com",
-          analyticsUuid: "64d3f59e73a84b3874769b00",
+          role: "admin",
           updatedAt: "2023-07-26T02:03:45.567Z",
           createdAt: "2023-07-26T02:03:45.567Z",
         },
