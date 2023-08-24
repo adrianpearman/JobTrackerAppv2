@@ -2,6 +2,7 @@
 const Sequelize = require("sequelize");
 const admin = require("firebase-admin");
 const mongoose = require("mongoose");
+const supabase = require("@supabase/supabase-js");
 // Config
 const { database, username, password, dialect, host, port } =
   require("../databases/sql/config/config")[process.env.NODE_ENV];
@@ -11,6 +12,7 @@ const {
   Application,
   Company,
   Platform,
+  Role,
   User,
 } = require("../databases/sql/models");
 // Mongo
@@ -276,6 +278,76 @@ const deleteUserApplicationAnalytics = async (uuid) => {
     };
   }
 };
+// USER ADMIN FUNCTIONS
+const isAdminUser = async (uuid) => {
+  try {
+    const user = await User.findOne({
+      where: {
+        uuid: uuid,
+      },
+      include: {
+        model: Role,
+        as: "role",
+      },
+    });
+
+    if (!user) {
+      throw new Error("Invalid user");
+    }
+
+    const { role } = user.dataValues.role.dataValues;
+
+    if (role !== "admin") {
+      throw new Error("Invalid user credentials");
+    }
+
+    return {
+      success: true,
+      isAdmin: true,
+      msg: "",
+    };
+  } catch (error) {
+    return {
+      success: false,
+      isAdmin: false,
+      msg: error.message || "Unable to perform request",
+    };
+  }
+};
+// SUPABASE SESSION AUTH
+const supabaseAuth = (isAuth = false) => {
+  return supabase.createClient(
+    process.env.SUPABASE_URL,
+    isAuth
+      ? process.env.SUPABASE_SERVICE_ROLE
+      : process.env.SUPABASE_PUBLIC_KEY,
+    {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false,
+      },
+    }
+  );
+};
+const isValidAuthSession = async (session) => {
+  const supabase = supabaseAuth();
+  const { data, error } = await supabase.auth.getUser(session);
+
+  console.log(data);
+
+  if (error || data.user === null) {
+    return {
+      success: false,
+      msg: "Unauthorized, invalid session",
+    };
+  } else {
+    return {
+      success: true,
+      msg: "",
+    };
+  }
+};
 
 module.exports = {
   doesCompanyExist,
@@ -284,7 +356,9 @@ module.exports = {
   createUserApplicationAnalytics,
   updateUserApplicationAnalytics,
   deleteUserApplicationAnalytics,
-  // DATABASE AND AUTH FUNCTIONS
+  isAdminUser,
+  isValidAuthSession,
+  // DATABASE AND AUTH INITIALIZATION
   firebaseAdminAuth: () => {
     const firebaseAdminConfig = {
       type: process.env.type,
@@ -326,4 +400,5 @@ module.exports = {
 
     return sequelize;
   },
+  supabaseAuth,
 };
