@@ -28,6 +28,10 @@ module.exports = {
       analyticsUuid: {
         type: DataTypes.STRING,
       },
+      roleId: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       createdAt: {
         allowNull: false,
         type: DataTypes.DATE,
