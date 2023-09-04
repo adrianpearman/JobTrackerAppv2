@@ -13,6 +13,11 @@ module.exports = {
           updatedAt: "2023-07-26T02:03:45.567Z",
           createdAt: "2023-07-26T02:03:45.567Z",
         },
+        {
+          role: "general",
+          updatedAt: "2023-07-26T02:03:45.567Z",
+          createdAt: "2023-07-26T02:03:45.567Z",
+        },
       ],
       {}
     );
