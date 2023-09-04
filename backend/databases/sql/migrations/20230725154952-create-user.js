@@ -27,18 +27,23 @@ module.exports = {
       },
       analyticsUuid: {
         type: DataTypes.STRING,
+        allowNull: false,
+      },
+      authUuid: {
+        type: DataTypes.STRING,
+        allowNull: false,
       },
       roleId: {
         type: DataTypes.INTEGER,
-        allowNull: false,
+        defaultValue: 2,
       },
       createdAt: {
-        allowNull: false,
         type: DataTypes.DATE,
+        allowNull: false,
       },
       updatedAt: {
-        allowNull: false,
         type: DataTypes.DATE,
+        allowNull: false,
       },
     });
   },

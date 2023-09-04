@@ -35,8 +35,13 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      authUuid: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       analyticsUuid: {
         type: DataTypes.STRING,
+        allowNull: false,
       },
     },
     {
