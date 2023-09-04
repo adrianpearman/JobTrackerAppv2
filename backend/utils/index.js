@@ -330,6 +330,35 @@ const supabaseAuth = (isAuth = false) => {
     }
   );
 };
+const createSupabaseUser = async (user) => {
+  const { firstName, lastName, email, password } = user;
+  const supabase = supabaseAuth(true);
+
+  try {
+    const { data, error } = await supabase.auth.admin.createUser({
+      email: email,
+      password: password,
+      user_metadata: {
+        name: `${firstName} ${lastName}`,
+      },
+    });
+
+    if (error) {
+      throw new Error(error);
+    }
+    return {
+      data: data,
+      error: null,
+      success: true,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error,
+      success: false,
+    };
+  }
+};
 const isValidAuthSession = async (session) => {
   const supabase = supabaseAuth();
   const { data, error } = await supabase.auth.getUser(session);
@@ -358,6 +387,7 @@ module.exports = {
   deleteUserApplicationAnalytics,
   isAdminUser,
   isValidAuthSession,
+  createSupabaseUser,
   // DATABASE AND AUTH INITIALIZATION
   firebaseAdminAuth: () => {
     const firebaseAdminConfig = {
