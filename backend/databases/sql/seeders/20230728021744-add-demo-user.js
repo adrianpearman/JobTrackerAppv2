@@ -14,7 +14,7 @@ module.exports = {
           lastName: "bean",
           email: "test@test.com",
           authUuid: "79590abe-729a-4145-918e-19564173b31a",
-          analyticsUuid: "64d3f59e73a84b3874769b00",
+          analyticsUuid: "f0662d72-2f9c-43a3-ac04-6dd294436fe5",
           roleId: 1,
           updatedAt: "2023-07-26T02:03:45.567Z",
           createdAt: "2023-07-26T02:03:45.567Z",
