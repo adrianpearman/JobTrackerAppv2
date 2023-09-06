@@ -4,6 +4,7 @@ const { Application, Role, User } = require("../databases/sql/models");
 const {
   createSupabaseUser,
   createUserApplicationAnalytics,
+  deleteSupabaseUser,
   deleteUserApplicationAnalytics,
   isAdminUser,
 } = require("../utils");
@@ -82,6 +83,8 @@ const userController = {
     }
   },
   deleteUser: async (req, res) => {
+    // Retrieving value set from middleware
+    const { user: spUser } = res.locals.supabaseUser;
     // Destructuring request body
     const { userUuid } = req.body;
     try {
@@ -100,7 +103,19 @@ const userController = {
         throw new Error(`Unable to find user:${userUuid}`);
       }
       // Destructuring user obj
-      const { analyticsUuid, id } = user.dataValues;
+      const { authUuid, analyticsUuid, id } = user.dataValues;
+      // Throwing error if account is attempted to be deleted by not the same user
+      if (authUuid !== spUser.id) {
+        throw new Error("Unauthorized to delete another user's account");
+      }
+      // Deleting associated supabase auth values
+      const { error, success: supabaseSuccess } = await deleteSupabaseUser(
+        authUuid
+      );
+      // If an error has occured when deleteing Supabase profile
+      if (supabaseSuccess === false) {
+        throw new Error(error);
+      }
       // Deleting the associated user analytics
       const deletedAnalytics = await deleteUserApplicationAnalytics(
         analyticsUuid
@@ -175,7 +190,7 @@ const userController = {
     const data = req.body;
 
     try {
-      // throw error if no userUuid
+      // Throw error if no userUuid
       if (!userUuid) {
         throw new Error("Missing user id");
       }
@@ -185,20 +200,19 @@ const userController = {
           uuid: userUuid,
         },
       });
-
+      // Throwing error if no user is found
       if (!user) {
         throw new Error(`No user matching id: ${userUuid}`);
       }
-
-      // will need to validate and investigate this further
+      // TODO: Will need to validate and investigate this further
       if (data.hasOwnProperty("roleId")) {
         throw new Error("Unable to change role id");
       }
-      // deleting analytics if part of the object
+      // Deleting analytics if part of the object
       if (data.hasOwnProperty("analyticsUuid")) {
         delete data.analyticsUuid;
       }
-      // setting values to lowercase
+      // Setting values to lowercase
       if (data.hasOwnProperty("firstName")) {
         data.firstName = data.firstName.toLowerCase();
       }
@@ -208,12 +222,12 @@ const userController = {
       if (data.hasOwnProperty("email")) {
         data.email = data.email.toLowerCase();
       }
-      // new object to represent updated user
+      // New object to represent updated user
       const updatedObj = {
         ...user.dataValues,
         ...data,
       };
-      // updating the user request
+      // Updating the user request
       const updateUserRequest = await User.update(updatedObj, {
         where: {
           uuid: userUuid,
@@ -221,9 +235,9 @@ const userController = {
         returning: true,
         plain: true,
       });
-      // setting returned values to a variable for further processing
+      // Setting returned values to a variable for further processing
       const updatedUser = updateUserRequest[1].dataValues;
-      // removing values before sending back to the client
+      // Removing values before sending back to the client
       delete updatedUser.id;
       delete updatedUser.uuid;
       delete updatedUser.createdAt;
@@ -259,8 +273,6 @@ const userController = {
         msg: "Successfully returned all user roles",
       });
     } catch (error) {
-      console.log(error);
-
       res.status(400).send({
         success: false,
         roles: null,
@@ -298,19 +310,21 @@ const userController = {
     }
   },
   createUserRole: async (req, res) => {
+    // Destructuring req body
     const { role, userUuid } = req.body;
 
     try {
-      const user = await isAdminUser(userUuid);
-
-      if (!user.isAdmin) {
-        throw new Error(user.msg);
+      // Destructuring returned object on Admin user function
+      const { isAdmin, msg } = await isAdminUser(userUuid);
+      // Throwing an error if not an admin
+      if (!isAdmin) {
+        throw new Error(msg);
       }
-
+      // Throwing error if no role
       if (!role) {
         throw new Error("Missing role");
       }
-
+      // Creating the new role
       const newRole = await Role.create({
         role: role.toLowerCase(),
       });
@@ -330,30 +344,31 @@ const userController = {
   },
   updateUserRole: async (req, res) => {},
   deleteUserRole: async (req, res) => {
+    // Destructuring the req body
     const { role, userUuid } = req.body;
 
     try {
-      // validate whether user is an admin user
-      const user = await isAdminUser(userUuid);
-      //  throw error if it's not an admin
-      if (!user.isAdmin) {
-        throw new Error(user.msg);
+      // Validate whether user is an admin user
+      const { isAdmin, msg } = await isAdminUser(userUuid);
+      //  Throw error if it's not an admin
+      if (!isAdmin) {
+        throw new Error(msg);
       }
-      // throw error if no role is provided
+      // Throw error if no role is provided
       if (!role) {
         throw new Error("Missing role");
       }
-      // throw error if admin role is attempted to be deleted
+      // Throw error if admin role is attempted to be deleted
       if (role.toLowerCase() === "admin") {
         throw new Error("Unable to delete Admin role");
       }
-      // deleting the role
+      // Deleting the role
       const deletedRole = await Role.destroy({
         where: {
           role: role.toLowerCase(),
         },
       });
-      // throw error for role that does not exist
+      // Throw error for role that does not exist
       if (deletedRole === 0) {
         throw new Error(`Error: no role called ${role}`);
       }
