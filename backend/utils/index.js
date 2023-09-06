@@ -337,6 +337,7 @@ const createSupabaseUser = async (user) => {
   try {
     const { data, error } = await supabase.auth.admin.createUser({
       email: email,
+      email_confirm: true,
       password: password,
       user_metadata: {
         name: `${firstName} ${lastName}`,
@@ -359,36 +360,69 @@ const createSupabaseUser = async (user) => {
     };
   }
 };
+const deleteSupabaseUser = async (authId) => {
+  const supabase = supabaseAuth(true);
+
+  try {
+    // Destructuring returned value of deleted user
+    const { data, error } = await supabase.auth.admin.deleteUser(authId);
+    // Throw error if unable to delete user
+    if (error) {
+      throw new Error(error);
+    }
+
+    return {
+      data: data,
+      error: null,
+      success: true,
+    };
+  } catch (error) {
+    return {
+      data: null,
+      error: error,
+      success: false,
+    };
+  }
+};
 const isValidAuthSession = async (session) => {
+  // Creating supabase connections
   const supabase = supabaseAuth();
+  // Destructuring returned value; getting user based on session_token
   const { data, error } = await supabase.auth.getUser(session);
-
-  console.log(data);
-
+  // Throwing an error if invalid session token
   if (error || data.user === null) {
     return {
       success: false,
       msg: "Unauthorized, invalid session",
+      data: data,
     };
-  } else {
+  }
+  // Proceeding if valid session
+  else {
     return {
       success: true,
       msg: "",
+      data: data,
     };
   }
 };
 
 module.exports = {
+  //
   doesCompanyExist,
   daysBetweenApplications,
+  // Analytics
   applicationAnalytics,
   createUserApplicationAnalytics,
   updateUserApplicationAnalytics,
   deleteUserApplicationAnalytics,
+  // Supabase Auth Functions
   isAdminUser,
   isValidAuthSession,
+  // Supabase User Functions
   createSupabaseUser,
-  // DATABASE AND AUTH INITIALIZATION
+  deleteSupabaseUser,
+  // Database and Auth Initialization
   firebaseAdminAuth: () => {
     const firebaseAdminConfig = {
       type: process.env.type,
