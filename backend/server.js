@@ -6,11 +6,7 @@ const express = require("express");
 // Server Variables
 const PORT = process.env.PORT || 3001;
 const app = express();
-const {
-  mongooseConnection,
-  sequelizeConnection,
-  supabaseAuth,
-} = require("./utils");
+const { mongooseConnection, sequelizeConnection } = require("./utils");
 // Middlewares
 app.use(cors());
 app.use(cookieParser());
@@ -31,20 +27,6 @@ app.listen(PORT, async (err) => {
     sequelizeConnection().authenticate();
     console.log("Connected to PostgreSQL DB");
     await mongooseConnection();
-
-    // const supabase = supabaseAuth();
-    // supabase.auth
-    //   // .signUp({ email: "adrianpearman12@gmail.com", password: "password123!" })
-    //   .signInWithPassword({
-    //     email: "adrianpearman12@gmail.com",
-    //     password: "password123!",
-    //   })
-    //   .then((response) => {
-    //     console.log(response);
-    //   })
-    //   .catch((error) => {
-    //     console.log(error);
-    //   });
   } catch (error) {
     console.log(error);
   }
