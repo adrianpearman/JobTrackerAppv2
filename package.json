@@ -23,6 +23,7 @@
     "dev": "concurrently \"yarn run backend-dev\" \"yarn run client-dev\""
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.33.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "cross-env": "^7.0.3",
