@@ -33,12 +33,11 @@ const applicationController = {
           },
         },
       });
+      const { applications, analyticsUuid } = user.dataValues;
       // Manipulating the applications to only include the dataValues
-      const applications = user.dataValues.applications.map(
-        (app) => app.dataValues
-      );
+      const applicationData = applications.map((app) => app.dataValues);
       // Retriving the user analytics
-      const userAnalytics = await applicationAnalytics(userUuid);
+      const userAnalytics = await applicationAnalytics(analyticsUuid);
       const { analytics, msg, success } = userAnalytics;
       // Throwing an error if an error occured with getting the analytics
       if (!success) {
@@ -47,7 +46,7 @@ const applicationController = {
 
       res.send({
         analytics: analytics,
-        applications,
+        applications: applicationData,
         message: "Successfully returned all applications",
         success: true,
       });
