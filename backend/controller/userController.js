@@ -16,19 +16,19 @@ const userController = {
     const { firstName, lastName, email, password } = req.body;
     try {
       // Throwing error if firstname is missing
-      if (firstName === undefined) {
+      if (firstName === undefined || firstName === "") {
         throw new Error("First name cannot be blank");
       }
       // Throwing error if lastname is missing
-      if (lastName === undefined) {
+      if (lastName === undefined || lastName === "") {
         throw new Error("Last name cannot be blank");
       }
       // Throwing error if email is missing
-      if (email === undefined) {
+      if (email === undefined || email === "") {
         throw new Error("Email cannot be blank");
       }
       // Throwing error if password is missing
-      if (password === undefined) {
+      if (password === undefined || password === "") {
         throw new Error("Password cannot be blank");
       }
       // Throwing an error if password length is not at appropriate length
@@ -70,13 +70,13 @@ const userController = {
       });
 
       res.send({
-        message: "Successfully created a new user",
+        msg: "Successfully created a new user",
         success: true,
         user: user,
       });
     } catch (error) {
       res.status(400).send({
-        message: error.message,
+        msg: error.message,
         success: false,
         user: null,
       });
@@ -158,28 +158,31 @@ const userController = {
   },
   getUser: async (req, res) => {
     // Destructuring request body
-    const { userUuid } = req.query;
+    const { authUuid, searchByAuth = "false", userUuid } = req.query;
     try {
       // Throwing an error if no user uuid
-      if (!userUuid) {
+      if (searchByAuth === "false" && !userUuid) {
         throw new Error("User UUID is missing");
       }
+
+      const searchParam =
+        searchByAuth === "false" ? { uuid: userUuid } : { authUuid: authUuid };
       // Getting the user information
       const user = await User.findOne({
-        where: { uuid: userUuid },
+        where: searchParam,
         attributes: {
           exclude: ["createdAt", "updatedAt"],
         },
       });
 
       res.send({
-        message: "Successfully returned user",
+        msg: "Successfully returned user",
         success: true,
         user: user,
       });
     } catch (error) {
       res.status(400).send({
-        message: error.message || "An error occured while retrieving User",
+        msg: error.message || "An error occured while retrieving User",
         success: false,
         user: null,
       });
