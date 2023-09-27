@@ -3,10 +3,9 @@ const { isValidAuthSession } = require("../utils");
 module.exports = {
   checkAuthorized: async (req, res, next) => {
     // Destructoring header
-    const { session_token } = req.headers;
-
+    const { authorization } = req.headers;
     try {
-      const { data, msg, success } = await isValidAuthSession(session_token);
+      const { data, msg, success } = await isValidAuthSession(authorization);
       // Throw an error if the sesison is invalid
       if (success === false) {
         throw new Error(msg);
