@@ -5,6 +5,7 @@ const AnalyticsModel = require("../databases/mongo/models/analytic");
 const {
   applicationAnalytics,
   doesCompanyExist,
+  doesPlatformExist,
   updateUserApplicationAnalytics,
 } = require("../utils");
 
@@ -47,14 +48,14 @@ const applicationController = {
       res.send({
         analytics: analytics,
         applications: applicationData,
-        message: "Successfully returned all applications",
+        msg: "Successfully returned all applications",
         success: true,
       });
     } catch (error) {
       res.status(400).send({
         analytics: null,
         applications: null,
-        message: error.message || "Unable to perform this request",
+        msg: error.message || "Unable to perform this request",
         success: false,
       });
     }
@@ -90,14 +91,13 @@ const applicationController = {
 
       res.send({
         application: application,
-        message: `Successfully returned Application:${applicationUuid}`,
+        msg: `Successfully returned Application:${applicationUuid}`,
         success: true,
       });
     } catch (error) {
       res.status(400).send({
         application: null,
-        message:
-          error.message || `Nothing found with the id of ${applicationUuid}`,
+        msg: error.message || `Nothing found with the id of ${applicationUuid}`,
         success: false,
       });
     }
@@ -138,65 +138,82 @@ const applicationController = {
   },
   addNewApplication: async (req, res) => {
     const date = new Date();
-    const {
+    let {
       companyName,
-      day = date.getDate(), // must be valid for the specified month
+      day, // must be valid for the specified month
       decision = null,
       interview = null,
-      interviewDate = null,
+      interviewDate,
       link,
-      month = date.getMonth(), // must be in a range of 0 - 11
-      platformId,
+      month, // must be in a range of 0 - 11
       response = false,
-      responseDate = null,
+      responseDate,
       sourceSite,
       userUuid,
-      year = date.getFullYear(), // must be a valid year
+      year, // must be a valid year
     } = req.body;
+
     try {
+      // Sanitizing Request Data
+      // Dates
+      if (day === "") {
+        day = date.getDate();
+      }
+      if (month === "") {
+        month = date.getMonth();
+      }
+      if (year === "") {
+        year = date.getFullYear();
+      }
+      // Interview
+      if (interviewDate === "") {
+        interviewDate = null;
+      }
+      // Response
+      if (responseDate === "") {
+        responseDate = null;
+      }
+
       const formattedDate = new Date(year, month, day, 0, 0, 0);
       // Getting user id
       const user = await User.findOne({ where: { uuid: userUuid } });
       // Verifying if company is new or previously put in DB
-      const newCompany = await doesCompanyExist(companyName);
-
-      let companyNameDetail;
-      // Validates whether a company is new or not
-      // todo review the findAndCreate function
-      if (newCompany.exists === true) {
-        companyNameDetail = newCompany.company;
-      } else {
-        const createdNewCompany = await Company.create({
-          companyName: companyName,
-        });
-        companyNameDetail = createdNewCompany.dataValues;
+      const companyDetails = await doesCompanyExist(companyName);
+      // Throwing error if unable to add or retrieve company
+      if (companyDetails.success === false) {
+        throw new Error(companyDetails.msg);
       }
-
+      // Verifying if platform is new or previously put in DB
+      const platFormDetails = await doesPlatformExist(sourceSite);
+      // Throwing error if unable to add or retrieve platform
+      if (platFormDetails.success === false) {
+        throw new Error(platFormDetails.msg);
+      }
+      // Creating new application
       const newApplication = await Application.create({
         applicationDate: formattedDate,
-        companyId: companyNameDetail.id,
+        companyId: companyDetails.company.id,
         decision: decision,
         interview: interview,
         interviewDate: interviewDate,
         link: link,
-        platformId: platformId,
+        platformId: platFormDetails.platform.id,
         response: response,
         responseDate: responseDate,
-        sourceSite: sourceSite,
         userId: user.dataValues.id,
       });
-
+      // Updating user analytics
       await updateUserApplicationAnalytics(userUuid);
-
+      // Sending response back thru response
       res.send({
         application: newApplication,
-        message: "Successfully added application",
+        msg: "Successfully added application",
         success: true,
       });
     } catch (error) {
       res.status(400).send({
         application: null,
-        message: error.message,
+        msg: error.message,
         success: false,
       });
     }
@@ -261,9 +278,11 @@ const applicationController = {
       // Throw error if unable to delete the application
       if (deletedApplication !== 1) {
         throw new Error(`Unable to delete application:${applicationUuid}`);
+      } else {
+        // Updating the user analytics
+        console.log("starting analytic flow");
+        await updateUserApplicationAnalytics(userUuid);
       }
-      // Updating the user analytics
-      await updateUserApplicationAnalytics(userUuid);
 
       res.send({
         application: app,
