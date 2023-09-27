@@ -23,37 +23,94 @@ const AnalyticsModel = require("../databases/mongo/models/analytic");
 const convertToUnixSec = (time) => {
   return parseInt((new Date(time).getTime() / 1000).toFixed(0));
 };
-const doesCompanyExist = async (name) => {
-  const company = await Company.findOne({
-    where: {
-      companyName: name,
-    },
-  });
-
-  if (company === null) {
-    return {
-      company: null,
-      exists: false,
-    };
-  } else {
-    return {
-      company: company.dataValues,
-      exists: true,
-    };
-  }
-};
 const daysBetweenApplications = (beginning, end) => {
   const secondInDay = 86400;
   const beginningUnix = convertToUnixSec(beginning);
   const endUnix = convertToUnixSec(end);
   return (endUnix - beginningUnix) / secondInDay;
 };
-// ANALYTICS UTIL FUNCTIONS
-const applicationAnalytics = async (userUuid) => {
+// This will verify if company exists and then create if not
+const doesCompanyExist = async (name) => {
   try {
-    const user = await User.findOne({ where: { uuid: userUuid } });
-    const { analyticsUuid } = user.dataValues;
+    // Looking for company
+    const company = await Company.findOne({
+      where: {
+        companyName: name,
+      },
+    });
+    // If company has not been added before
+    if (company === null) {
+      // Creating new company
+      const createdNewCompany = await Company.create({
+        companyName: name,
+      });
+      // Returning company details
+      return {
+        company: createdNewCompany.dataValues,
+        msg: "Successfully created new company",
+        success: true,
+      };
+    }
+    // Company already exists
+    else {
+      // Returning company details
+      return {
+        company: company.dataValues,
+        msg: "Successfully returned company",
+        success: true,
+      };
+    }
+  } catch (error) {
+    console.log(error);
+    // Returning error details
+    return {
+      company: null,
+      msg: "Error occured, unable to return/create company",
+      success: false,
+    };
+  }
+};
+//
+const doesPlatformExist = async (name) => {
+  try {
+    const platform = await Platform.findOne({
+      where: {
+        platformName: name,
+      },
+    });
+    console.log(name);
+    console.log(platform);
+    //
+    if (platform === null) {
+      const createPlatform = await Platform.create({
+        platformName: name,
+      });
 
+      return {
+        msg: "Successfully created new platform",
+        platform: createPlatform.dataValues,
+        success: true,
+      };
+    }
+    //
+    else {
+      return {
+        msg: "Successfully returned platform",
+        platform: platform.dataValues,
+        success: true,
+      };
+    }
+  } catch (error) {
+    return {
+      msg: "Error, unable to return platform",
+      platform: null,
+      success: false,
+    };
+  }
+};
+// ANALYTICS UTIL FUNCTIONS
+const applicationAnalytics = async (analyticsUuid) => {
+  try {
     const userAnalytics = await AnalyticsModel.findOne({
       _id: analyticsUuid,
     });
@@ -61,7 +118,7 @@ const applicationAnalytics = async (userUuid) => {
     return {
       success: true,
       analytics: userAnalytics,
-      msg: "",
+      msg: "Successfully returned user analytics",
     };
   } catch (error) {
     return {
@@ -167,8 +224,10 @@ const updateUserApplicationAnalytics = async (userUuid) => {
       responsesPerPlatform[platformName] = 0;
       responsesTimeTotalPerPlatform[platformName] = 0;
     });
+    // Destructured applications from user object
+    const { analyticsUuid, applications } = user.dataValues;
     // Iterating thorough user applications
-    user.applications.forEach((ua) => {
+    applications.forEach((ua) => {
       // Destructured each user app
       const { dataValues: apps } = ua;
       // Pushing start dates to array for future calculation
@@ -235,25 +294,26 @@ const updateUserApplicationAnalytics = async (userUuid) => {
     // Deleting un needed obj property
     delete baseAnalytics.responsesTimeTotalPerPlatform;
     // Updating individual user analytics
-    await AnalyticsModel.findOneAndUpdate(
-      { id: user.dataValues.platformId },
+
+    const res = await AnalyticsModel.replaceOne(
+      { _id: analyticsUuid },
       baseAnalytics
     );
     // Getting the newly created obj to return
-    const newAnalytics = await AnalyticsModel.findOne({
-      id: user.dataValues.platformId,
+    const newAnalytics = await AnalyticsModel.find({
+      _id: analyticsUuid,
     });
 
     return {
-      success: true,
-      analytics: newAnalytics,
+      analytics: newAnalytics[0],
       msg: "Successfully updated user analytics",
+      success: true,
     };
   } catch (error) {
     return {
-      success: false,
       analytics: {},
       msg: error.message || "An error occured, plese try again later",
+      success: false,
     };
   }
 };
@@ -409,8 +469,9 @@ const isValidAuthSession = async (session) => {
 
 module.exports = {
   //
-  doesCompanyExist,
   daysBetweenApplications,
+  doesCompanyExist,
+  doesPlatformExist,
   // Analytics
   applicationAnalytics,
   createUserApplicationAnalytics,
