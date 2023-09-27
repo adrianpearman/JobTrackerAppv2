@@ -12,13 +12,13 @@ const platformController = {
       });
 
       res.send({
-        message: "Successfully retrieved platforms",
+        msg: "Successfully retrieved platforms",
         platforms: platforms,
         success: true,
       });
     } catch (error) {
       res.status(400).send({
-        message: error.message,
+        msg: error.message,
         platforms: null,
         success: false,
       });
@@ -41,13 +41,13 @@ const platformController = {
       });
 
       res.send({
-        message: `Successfully returned platform:${platformId}`,
+        msg: `Successfully returned platform:${platformId}`,
         platform: platform,
         success: true,
       });
     } catch (error) {
       res.status(400).send({
-        message: error.message || "",
+        msg: error.message || "",
         platform: null,
         success: false,
       });
@@ -130,14 +130,14 @@ const platformController = {
       const { platformName } = platform.dataValues;
 
       res.send({
-        message: `Successfully returned applications for platform: ${platformName}`,
+        msg: `Successfully returned applications for platform: ${platformName}`,
         platform: platform,
         success: true,
       });
     } catch (error) {
       res.status(400).send({
         applications: null,
-        message: error.message || "Unable to find applications from platform:",
+        msg: error.message || "Unable to find applications from platform:",
         platform: null,
         success: false,
       });
@@ -157,13 +157,13 @@ const platformController = {
       });
 
       res.send({
-        message: "Successfully added new platform",
+        msg: "Successfully added new platform",
         platform: newPlatform,
         success: true,
       });
     } catch (error) {
       res.status(400).send({
-        message: error.message || "",
+        msg: error.message || "",
         platform: null,
         success: false,
       });
@@ -173,7 +173,7 @@ const platformController = {
     try {
     } catch (error) {
       res.status(400).send({
-        message: error.message || "",
+        msg: error.message || "",
         platform: null,
         success: false,
       });
@@ -183,7 +183,7 @@ const platformController = {
     try {
     } catch (error) {
       res.status(400).send({
-        message: error.message || "",
+        msg: error.message || "",
         platform: null,
         success: false,
       });
