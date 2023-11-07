@@ -8,13 +8,11 @@ const {
   addNewApplication,
   deleteApplication,
   getAllApplications,
-  getApplicationAnalytics,
   getIndividualApplication,
   updateApplication,
 } = require("../controller/applicationController");
 // Routes
 // GET
-router.get("/api/analytics", getApplicationAnalytics);
 router.get("/api/applications", getAllApplications);
 router.get("/api/application", getIndividualApplication);
 // POST
