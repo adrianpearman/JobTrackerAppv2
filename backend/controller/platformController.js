@@ -56,82 +56,80 @@ const platformController = {
   getApplicationsByPlatform: async (req, res) => {
     // Destructuring the req query
     const { isPrivate = "false", platformId, userUuid } = req.query;
-
+    // Returning the platform and it's associatied applications
     try {
       // Error handling if no platform provided
       if (!platformId) {
         throw new Error("Missing Platform ID");
       }
-      let platform;
-
-      // Returning the platform and it's associatied applications
-      // For private request, it'll return all requests related to the user
-      if (isPrivate === "true") {
-        // Throwing an error if no user uuid is provided
-        if (!userUuid) {
-          throw new Error("User UUID missing");
-        }
-        // Getting the user information
-        const user = await User.findOne({
-          where: {
-            uuid: userUuid,
-          },
-        });
-        // Destructuring the user object
-        const { id } = user.dataValues;
-        // Retrieving the platform data
-        platform = await Platform.findOne({
-          where: { id: platformId },
-          attributes: {
-            exclude: ["createdAt", "updatedAt"],
-          },
-          include: {
-            as: "applications",
-            model: Application,
-            where: {
-              userId: id,
-            },
-            attributes: {
-              exclude: ["createdAt", "updatedAt"],
-            },
-          },
-        });
+      // Throwing an error if no user uuid is provided
+      if (!userUuid) {
+        throw new Error("User UUID missing");
       }
-      // For non private, it'll return all applications per platform but user data removed
-      else {
-        platform = await Platform.findOne({
-          where: { id: platformId },
+      // For private request, it'll return all requests related to the user
+      const privateData = isPrivate
+        ? ["createdAt", "updatedAt"]
+        : [
+            "applicationDate",
+            "createdAt",
+            "decision",
+            "id",
+            "interview",
+            "interviewDate",
+            "link",
+            "response",
+            "responseDate",
+            "updatedAt",
+            "userId",
+            "uuid",
+          ];
+      // Getting the user information
+      const user = await User.findOne({
+        where: {
+          uuid: userUuid,
+        },
+      });
+      // Throw error if no user
+      if (user === null) {
+        throw new Error("No user found");
+      }
+      // Destructuring the user object
+      const { id } = user.dataValues;
+      // Retrieving the platform data
+      const platform = await Platform.findOne({
+        where: { id: platformId },
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+        include: {
+          as: "applications",
+          model: Application,
           attributes: {
-            exclude: ["createdAt", "updatedAt"],
+            exclude: privateData,
           },
-          include: {
-            as: "applications",
-            model: Application,
-            attributes: {
-              exclude: [
-                "applicationDate",
-                "createdAt",
-                "decision",
-                "id",
-                "interview",
-                "interviewDate",
-                "link",
-                "response",
-                "responseDate",
-                "updatedAt",
-                "userId",
-                "uuid",
-              ],
-            },
-          },
-        });
+        },
+      });
+      // Throw error if no platform found
+      if (platform === null) {
+        throw new Error("Error, invalid platform id");
       }
       // Destructuring the platform object
-      const { platformName } = platform.dataValues;
+      const { applications, id: platId, platformName } = platform.dataValues;
+      // Filtering values from platform
+      // TODO: figure out if whether its possible on the request
+      const userApplications = applications
+        .filter((app) => app.dataValues.userId === id)
+        .map((app) => app.dataValues);
+
+      const data = {
+        id: platId,
+        platformName: platformName,
+        applications: userApplications,
+      };
 
       res.send({
         msg: `Successfully returned applications for platform: ${platformName}`,
-        platform: platform,
+        platform: data,
         success: true,
       });
     } catch (error) {

@@ -38,6 +38,27 @@ const companyController = {
       });
     }
   },
+  getCompanies: async (req, res) => {
+    try {
+      const companies = await Company.findAll({
+        attributes: {
+          exclude: ["createdAt", "updatedAt"],
+        },
+      });
+
+      res.send({
+        companies: companies,
+        msg: "Successfully retrieved platforms",
+        success: true,
+      });
+    } catch (error) {
+      res.status(404).send({
+        companies: null,
+        msg: error.msg,
+        success: false,
+      });
+    }
+  },
 };
 
 module.exports = companyController;

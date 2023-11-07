@@ -1,6 +1,5 @@
 // Models
-const { Application, Company, User } = require("../databases/sql/models");
-const AnalyticsModel = require("../databases/mongo/models/analytic");
+const { Application, User } = require("../databases/sql/models");
 // Util functions
 const {
   applicationAnalytics,
@@ -99,40 +98,6 @@ const applicationController = {
         application: null,
         msg: error.message || `Nothing found with the id of ${applicationUuid}`,
         success: false,
-      });
-    }
-  },
-  getApplicationAnalytics: async (req, res) => {
-    // Destructuring request query
-    const { userUuid } = req.query;
-    try {
-      // throwing error if no user uuid
-      if (!userUuid) {
-        throw new Error("User UUID is missing");
-      }
-      // getting the user information
-      const user = await User.findOne({
-        where: { uuid: userUuid },
-      });
-      // getting the associated user analytics
-      const userAnalytics = await AnalyticsModel.findOne(
-        {
-          _id: user.dataValues.analyticsUuid,
-        },
-        // this omits the id from the returned values
-        { _id: 0 }
-      );
-
-      res.send({
-        success: true,
-        userAnalytics: userAnalytics,
-        msg: "Successfully returned user analytics",
-      });
-    } catch (error) {
-      res.status(400).send({
-        success: false,
-        userAnalytics: {},
-        msg: error.message || "Unable to retrieve analytics",
       });
     }
   },
