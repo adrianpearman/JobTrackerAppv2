@@ -13,7 +13,7 @@ module.exports = {
           firstName: "billy",
           lastName: "bean",
           email: "test@test.com",
-          authUuid: "79590abe-729a-4145-918e-19564173b31a",
+          authUuid: "f0662d72-2f9c-43a3-ac04-6dd294436fe5",
           analyticsUuid: "64db9fde570643001c10516b",
           roleId: 1,
           updatedAt: "2023-07-26T02:03:45.567Z",
