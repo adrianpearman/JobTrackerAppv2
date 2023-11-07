@@ -13,6 +13,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 // Routes
+app.use(require("./routes/analyticsRoutes"));
 app.use(require("./routes/applicationRoutes"));
 app.use(require("./routes/companyRoutes"));
 app.use(require("./routes/platformRoutes"));
