@@ -31,7 +31,7 @@ module.exports = {
       },
       interviewDate: {
         type: DataTypes.DATE,
-        default: null,
+        default: "",
       },
       link: {
         type: DataTypes.STRING,
@@ -43,7 +43,7 @@ module.exports = {
       },
       responseDate: {
         type: DataTypes.DATE,
-        default: null,
+        default: "",
       },
       companyId: {
         type: DataTypes.INTEGER,
