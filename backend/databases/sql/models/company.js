@@ -8,10 +8,6 @@ module.exports = (sequelize, DataTypes) => {
         as: "applications",
       });
     }
-
-    toJSON() {
-      return { ...this.get(), id: undefined };
-    }
   }
   Company.init(
     {

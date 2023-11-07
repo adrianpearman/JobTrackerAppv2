@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       interviewDate: {
         type: DataTypes.DATE,
-        default: null,
+        default: "",
       },
       link: {
         type: DataTypes.STRING,
@@ -45,7 +45,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       responseDate: {
         type: DataTypes.DATE,
-        default: null,
+        default: "",
       },
     },
     {
