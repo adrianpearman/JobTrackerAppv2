@@ -16,9 +16,20 @@ module.exports = {
         type: DataTypes.UUID,
         defaultValue: DataTypes.UUIDV4,
       },
+      applicationDay: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      applicationMonth: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
+      applicationYear: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+      },
       applicationDate: {
-        defaultValue: Date.now(),
-        type: DataTypes.DATE,
+        type: DataTypes.INTEGER,
         allowFalse: false,
       },
       decision: {
